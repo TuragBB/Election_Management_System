@@ -1,0 +1,220 @@
+﻿@model NominationSystem.Models.NominationDetail
+@using NominationSystem.Models
+
+@{
+    ViewBag.Title = "আবেদনপত্র বিস্তারিত";
+    ViewBag.PageTitle = "সকল মনোনয়ন আবেদন";
+    ViewBag.Active = "nominations";
+    ViewBag.AdminContentClass = "detail-content";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string declaration =
+        "আমি এই মর্মে অঙ্গীকার করছি যে, আমার প্রদত্ত সকল তথ্য সম্পূর্ণ সত্য ও সঠিক। " +
+        "কোনো তথ্য অসত্য প্রমাণিত হলে আমার প্রার্থিতা স্বয়ংক্রিয়ভাবে বাতিল বলে গণ্য হবে। " +
+        "আমি স্টাফ ওয়েলফেয়ার ফান্ডের গঠনতন্ত্র ও নির্বাচন কমিশন কর্তৃক ঘোষিত সকল নির্বাচনী আচরণবিধি ও " +
+        "সিদ্ধান্ত শ্রদ্ধাভরে মেনে চলতে বাধ্য থাকব।";
+}
+
+@functions {
+    private static string YesNo(bool value, string yesLabel)
+    {
+        return value ? "হ্যাঁ (" + yesLabel + ")" : "না";
+    }
+}
+
+<form id="antiForgeryForm" style="display:none">@Html.AntiForgeryToken()</form>
+
+<div class="detail-wrap" id="detailWrap"
+     data-id="@Model.NominationId"
+     data-update-url="@Url.Action("UpdateStatus", "Admin")"
+     data-list-url="@Url.Action("Nominations", "Admin")">
+
+    <!-- top bar -->
+    <div class="detail-top">
+        <div>
+            <a href="@Url.Action("Nominations", "Admin")" class="back-link" id="backLink">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5" /><path d="M11 6l-6 6 6 6" /></svg>
+                সকল আবেদনে ফিরে যান
+            </a>
+        </div>
+        <span class="status-pill @NominationStatus.CssClass(Model.Status)" id="statusBadge" data-status="@Model.Status">
+            <i></i><span id="statusBadgeText">@NominationStatus.DetailText(Model.Status)</span>
+        </span>
+    </div>
+
+    <div class="detail-title-row">
+        <div>
+            <h1>আবেদনপত্র বিস্তারিত</h1>
+            <div class="detail-appno">আবেদনপত্র নং: <span class="code-chip">@Model.ApplicationNo</span></div>
+        </div>
+        <div class="decision-btns">
+            <button type="button" class="btn-reject" data-decision="Rejected">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9" /><path d="M15 9l-6 6M9 9l6 6" /></svg>
+                বাতিল করুন
+            </button>
+            <button type="button" class="btn-approve" data-decision="Approved">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l3 3 5-6" /></svg>
+                অনুমোদন করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= Form card ================= -->
+    <div class="form-card">
+
+        <div class="fc-head">
+
+            <!-- Main title -->
+            <h2>স্টাফ ওয়েলফেয়ার ফান্ড (SWF)</h2>
+
+            <!-- Selected post -->
+            <div class="detail-selected-post">
+                @Bn.PostWithEnglish(Model.DesiredPost)
+            </div>
+
+            <!-- Subtitle -->
+            <p>
+                ত্রিবার্ষিক নির্বাচন–২০২৭ |
+                নির্বাচনে অংশগ্রহণের আবেদন ও মনোনয়ন ফরম
+            </p>
+
+        </div>
+
+        <!-- প্রার্থীর ব্যক্তিগত তথ্য -->
+        <div class="fc-section">
+            <h3><span class="sec-mark">▾</span>প্রার্থীর ব্যক্তিগত তথ্য</h3>
+
+            <div class="info-grid">
+                <div class="info-box"><label>প্রার্থীর নাম</label><strong>@Model.CandidateName</strong></div>
+                <div class="info-box"><label>সদস্য নং</label><strong class="mono">@Model.MemberNo</strong></div>
+
+                <div class="info-box"><label>সংস্থার আইডি নং</label><strong class="mono">@Model.OrganizationId</strong></div>
+                <div class="info-box"><label>সংস্থার পদবী</label><strong>@Model.Designation</strong></div>
+
+                <div class="info-box"><label>পিতার / স্বামীর নাম</label><strong>@Model.FatherOrHusbandName</strong></div>
+                <div class="info-box"><label>মাতার নাম</label><strong>@Model.MotherName</strong></div>
+
+                <div class="info-box">
+                    <label>জন্মতারিখ</label>
+                    <strong>@Bn.DateText(Model.DateOfBirth) (বয়স: @Bn.Age(Model.DateOfBirth))</strong>
+                </div>
+                <div class="info-box"><label>জাতীয় পরিচয়পত্র (NID) নং</label><strong class="mono">@Model.NID</strong></div>
+
+                <div class="info-box"><label>মোবাইল নম্বর</label><strong class="mono">@Model.Mobile</strong></div>
+                <div class="info-box"><label>ই-মেইল</label><strong class="mono">@(string.IsNullOrWhiteSpace(Model.Email) ? "—" : Model.Email)</strong></div>
+
+                <div class="info-box full"><label>বর্তমান ঠিকানা</label><strong>@Model.PresentAddress</strong></div>
+                <div class="info-box full"><label>স্থায়ী ঠিকানা</label><strong>@Model.PermanentAddress</strong></div>
+            </div>
+        </div>
+
+        <!-- যে পদের জন্য -->
+        <div class="fc-section">
+            <h3><span class="sec-mark">▾</span>যে পদের জন্য প্রার্থী হতে ইচ্ছুক</h3>
+
+            <div class="post-box">
+                <div>
+                    <label>নির্বাচিত পদের নাম</label>
+                    <strong>@Bn.PostWithEnglish(Model.DesiredPost)</strong>
+                    <small>কেন্দ্রীয় পরিচালনা পর্ষদ (মেয়াদকাল ২০২৭–২০৩০)</small>
+                </div>
+                <span class="mini-pill">নির্বাচিত পদ</span>
+            </div>
+        </div>
+
+        <!-- সদস্যপদ সংক্রান্ত তথ্য -->
+        <div class="fc-section">
+            <h3><span class="sec-mark">▾</span>সদস্যপদ সংক্রান্ত তথ্য</h3>
+
+            <div class="qa-list">
+                <div class="qa-row">
+                    <div>
+                        <div class="qa-q">১. সমিতির সদস্য হওয়ার তারিখ</div>
+                        <small>অভিজ্ঞতা: @Bn.Duration(Model.MembershipDate, DateTime.Today)</small>
+                    </div>
+                    <strong class="qa-date">@Bn.DateText(Model.MembershipDate)</strong>
+                </div>
+
+                <div class="qa-row">
+                    <div class="qa-q">২. সদস্যপদ বর্তমানে সক্রিয় কি না?</div>
+                    <span class="yn @(Model.IsMembershipActive ? "yes" : "no")">@YesNo(Model.IsMembershipActive, "সক্রিয়")</span>
+                </div>
+
+                <div class="qa-row">
+                    <div class="qa-q">৩. সমিতির সঞ্চয় হালনাগাদ আছে কি না?</div>
+                    <span class="yn @(Model.IsSavingsUpdated ? "yes" : "no")">@YesNo(Model.IsSavingsUpdated, "হালনাগাদ")</span>
+                </div>
+
+                <div class="qa-row">
+                    <div class="qa-q">৪. সমিতি থেকে গ্রহণকৃত ঋণ হালনাগাদ আছে কি না?</div>
+                    <span class="yn @(Model.IsLoanUpdated ? "yes" : "no")">@YesNo(Model.IsLoanUpdated, "হালনাগাদ")</span>
+                </div>
+
+                <div class="qa-row">
+                    <div class="qa-q">৫. সমিতির গঠনতন্ত্র অনুযায়ী প্রার্থী হওয়ার যোগ্যতা পূরণ করেন কি না?</div>
+                    <span class="yn @(Model.IsEligible ? "yes" : "no")">@YesNo(Model.IsEligible, "যোগ্য")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- প্রার্থীর ঘোষণা -->
+        <div class="fc-section">
+            <h3><span class="sec-mark">▾</span>প্রার্থীর ঘোষণা</h3>
+
+            <blockquote class="declaration">“@(declaration)”</blockquote>
+
+            <div class="decl-meta">
+                <span>
+                    নির্বাচিত সদস্যের স্বাক্ষর: <strong>@Model.CandidateName</strong>
+                    @if (Model.CandidateDeclarationAccepted)
+                    {
+                        <span class="yn yes small">ঘোষণায় সম্মত</span>
+                    }
+                    else
+                    {
+                        <span class="yn no small">ঘোষণায় সম্মতি নেই</span>
+                    }
+                </span>
+                <span>তারিখ: @Bn.DateTimeText(Model.CreatedAt)</span>
+            </div>
+        </div>
+
+        <!-- প্রস্তাবকারী ও সমর্থনকারী -->
+        <div class="fc-section">
+            <h3><span class="sec-mark">▾</span>প্রস্তাবকারী ও সমর্থনকারী কর্মকর্তার প্রত্যয়ন</h3>
+
+            <div class="two-col proposer-supporter-grid">
+                <div class="person-box">
+                    <div class="pb-tag">প্রস্তাবকারী সদস্য</div>
+                    <div class="pb-row"><span>নাম:</span><strong>@Model.ProposerName</strong></div>
+                    <div class="pb-row"><span>সদস্য নং:</span><strong class="mono">@Model.ProposerMemberNo</strong></div>
+                    <div class="pb-row"><span>মোবাইল:</span><strong class="mono">@Model.ProposerMobile</strong></div>
+                    <div class="pb-row"><span>স্বাক্ষরের তারিখ:</span><strong>@Bn.DateText(Model.ProposerDate)</strong></div>
+                </div>
+
+                <div class="person-box">
+                    <div class="pb-tag">সমর্থনকারী সদস্য</div>
+                    <div class="pb-row"><span>নাম:</span><strong>@Model.SupporterName</strong></div>
+                    <div class="pb-row"><span>সদস্য নং:</span><strong class="mono">@Model.SupporterMemberNo</strong></div>
+                    <div class="pb-row"><span>মোবাইল:</span><strong class="mono">@Model.SupporterMobile</strong></div>
+                    <div class="pb-row"><span>স্বাক্ষরের তারিখ:</span><strong>@Bn.DateText(Model.SupporterDate)</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-footer decision-btns">
+            <button type="button" class="btn-reject" data-decision="Rejected">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9" /><path d="M15 9l-6 6M9 9l6 6" /></svg>
+                বাতিল করুন
+            </button>
+            <button type="button" class="btn-approve" data-decision="Approved">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l3 3 5-6" /></svg>
+                অনুমোদন করুন
+            </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="@Url.Content("~/Scripts/admin-details.js")"></script>
+}

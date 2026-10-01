@@ -1,0 +1,10 @@
+﻿/* Global MVC defaults intentionally kept minimal. Nomination UI is styled in nomination.css. */
+.body-content {
+    margin-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+a {
+    color: inherit;
+}

@@ -1,0 +1,206 @@
+﻿
+@model NominationForm.Models.Nomination
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8" />
+    <title>মনোনয়ন ফরম - @Model.ApplicationNo</title>
+    <style>
+        @@font-face {
+            font-family: 'NikoshBAN';
+            src: local('NikoshBAN'), local('Nikosh BAN'),
+                 url('@Url.Content("~/Content/fonts/NikoshBAN.ttf")') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            unicode-range: U+0980-09FF, U+0964-0965, U+200C-200D, U+25CC;
+        }
+
+        @@font-face {
+            font-family: 'NotoSansBengali';
+            src: url('@Url.Content("~/Content/pdf-fonts/NotoSansBengali-Regular.ttf")') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @@font-face {
+            font-family: 'NotoSansBengali';
+            src: url('@Url.Content("~/Content/pdf-fonts/NotoSansBengali-Bold.ttf")') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @@page {
+            size: A4 portrait;
+            margin: 18mm 16mm;
+        }
+
+        body {
+            font-family: 'NikoshBAN', 'NotoSansBengali', 'Segoe UI', sans-serif;
+            font-size: 13pt;
+            color: #111;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, p {
+            margin: 5px 0;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px double #173f46;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+            .header h1 {
+                font-size: 19pt;
+            }
+
+        .section {
+            margin: 16px 0;
+            page-break-inside: avoid;
+        }
+
+            .section h2 {
+                font-size: 14pt;
+                border-bottom: 1px solid #777;
+                padding-bottom: 5px;
+            }
+
+        .field {
+            margin: 7px 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .signature {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 45px;
+            text-align: center;
+        }
+
+            .signature div {
+                width: 45%;
+                border-top: 1px solid #111;
+                padding-top: 5px;
+            }
+
+        .declaration li {
+            margin: 7px 0;
+        }
+
+        .print-actions {
+            text-align: center;
+            margin: 20px;
+        }
+
+        @@media print {
+            .print-actions {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: 'NikoshBAN', 'NotoSansBengali', 'Segoe UI', sans-serif !important;
+            }
+
+            .pdf-preview,
+            .pdf-preview * {
+                font-family: 'NikoshBAN', 'NotoSansBengali', 'Segoe UI', sans-serif !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-actions">
+        <button onclick="window.print()">Print / Save as PDF</button>
+        <button onclick="window.close()">বন্ধ করুন</button>
+    </div>
+
+    <div class="header">
+        <h2>Staff Welfare Fund</h2>
+        <h1>নির্বাচনে অংশগ্রহণের আবেদন / মনোনয়ন ফরম</h1>
+        <h3>ত্রিবার্ষিক নির্বাচন–২০২৭</h3>
+        <p>আবেদনপত্র নং: @Model.ApplicationNo</p>
+        <p>তারিখ: @(Model.ApplicationDate.ToString("dd/MM/yyyy"))</p>
+    </div>
+
+    <div class="section">
+        <h2>ক. প্রার্থীর ব্যক্তিগত তথ্য</h2>
+
+        <div class="field"><span class="label">১. প্রার্থীর নাম:</span> @Model.CandidateName</div>
+        <div class="field"><span class="label">২. সদস্য নং:</span> @Model.MemberNo</div>
+        <div class="field"><span class="label">৩. সংস্থার আইডি নং:</span> @Model.OrganizationId</div>
+        <div class="field"><span class="label">৪. সংস্থার পদবী:</span> @Model.Designation</div>
+        <div class="field"><span class="label">৫. পিতার/স্বামীর নাম:</span> @Model.FatherOrHusbandName</div>
+        <div class="field"><span class="label">৬. মাতার নাম:</span> @Model.MotherName</div>
+        <div class="field"><span class="label">৭. জন্মতারিখ:</span> @Model.DateOfBirth.ToString("dd/MM/yyyy")</div>
+        <div class="field"><span class="label">৮. জাতীয় পরিচয়পত্র নং:</span> @Model.NID</div>
+        <div class="field"><span class="label">৯. বর্তমান ঠিকানা:</span> @Model.PresentAddress</div>
+        <div class="field"><span class="label">১০. স্থায়ী ঠিকানা:</span> @Model.PermanentAddress</div>
+        <div class="field"><span class="label">১১. মোবাইল নম্বর:</span> @Model.Mobile</div>
+        <div class="field"><span class="label">১২. ই-মেইল:</span> @Model.Email</div>
+    </div>
+
+    <div class="section">
+        <h2>খ. যে পদের জন্য প্রার্থী হতে ইচ্ছুক</h2>
+        <p>নির্বাচিত পদের নাম: @Model.DesiredPost</p>
+    </div>
+
+    <div class="section">
+        <h2>গ. সদস্যপদ সংক্রান্ত তথ্য</h2>
+        <p>সমিতির সদস্য হওয়ার তারিখ: @Model.MembershipDate.ToString("dd/MM/yyyy")</p>
+        <p>সদস্যপদ বর্তমানে সক্রিয় কি না: @(Model.IsMembershipActive == true ? "হ্যাঁ" : "না")</p>
+        <p>সমিতির সঞ্চয় হালনাগাদ আছে কি না: @(Model.IsSavingsUpdated == true ? "হ্যাঁ" : "না")</p>
+        <p>সমিতি থেকে গ্রহণকৃত ঋণ হালনাগাদ আছে কি না: @(Model.IsLoanUpdated == true ? "হ্যাঁ" : "না")</p>
+        <p>গঠনতন্ত্র অনুযায়ী যোগ্যতা পূরণ করেন কি না: @(Model.IsEligible == true ? "হ্যাঁ" : "না")</p>
+    </div>
+
+    <div class="section">
+        <h2>ঘ. প্রার্থীর ঘোষণা</h2>
+        <p>আমি এই মর্মে ঘোষণা করছি যে—</p>
+        <ol class="declaration">
+            <li>উপরোক্ত সকল তথ্য আমার জ্ঞান ও বিশ্বাস অনুযায়ী সঠিক ও সত্য।</li>
+            <li>আমি সমিতির গঠনতন্ত্র, নির্বাচন সংক্রান্ত বিধি এবং নির্বাচন কমিশনের নির্দেশনা মেনে চলব।</li>
+            <li>নির্বাচনে অংশগ্রহণের জন্য গঠনতন্ত্রে নির্ধারিত সকল যোগ্যতা আমি পূরণ করি।</li>
+            <li>আমার কোনো তথ্য অসত্য, অসম্পূর্ণ বা গোপন প্রমাণিত হলে নির্বাচন কমিশন সমিতি গঠনতন্ত্র অনুযায়ী প্রয়োজনীয় ব্যবস্থা গ্রহণ করতে পারবেন।</li>
+            <li>নির্বাচনী আচরণবিধি মেনে চলব এবং কোনো ধরনের অনৈতিক প্রভাব, চাপ, অর্থ বা সুবিধা প্রদানের চেষ্টা করব না।</li>
+            <li>নির্বাচনের ফলাফল ও নির্বাচন কমিশনের বৈধ সিদ্ধান্তকে গঠনতন্ত্রের বিধান অনুযায়ী সম্মান করব।</li>
+        </ol>
+
+        <div class="signature">
+            <div>প্রার্থীর স্বাক্ষর<br /><br />নাম: @Model.CandidateName<br /><br />তারিখ: ______________</div>
+            <div>প্রস্তাবকারীর স্বাক্ষর<br /><br />নাম: @Model.ProposerName<br /><br />সদস্য নং: @Model.ProposerMemberNo</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>প্রস্তাবকারী ও সমর্থনকারীর প্রত্যয়ন</h2>
+        <p>প্রস্তাবকারী সদস্য: @Model.ProposerName</p>
+        <p>সদস্য নং: @Model.ProposerMemberNo</p>
+        <p>প্রস্তাবিত পদ: @Model.ProposerPost</p>
+        <p>মোবাইল: @Model.ProposerMobile</p>
+        <p>তারিখ: @Model.ProposerDate.ToString("dd/MM/yyyy")</p>
+
+        <br />
+
+        <p>সমর্থনকারী সদস্য: @Model.SupporterName</p>
+        <p>সদস্য নং: @Model.SupporterMemberNo</p>
+        <p>মোবাইল: @Model.SupporterMobile</p>
+        <p>তারিখ: @Model.SupporterDate.ToString("dd/MM/yyyy")</p>
+
+        <div class="signature">
+            <div>প্রস্তাবকারীর স্বাক্ষর</div>
+            <div>সমর্থনকারীর স্বাক্ষর</div>
+        </div>
+    </div>
+</body>
+</html>

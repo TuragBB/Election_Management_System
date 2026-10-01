@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "আবেদন সফল";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var appNo = Convert.ToString(ViewBag.ApplicationNo);
+    DateTime applicationDate = ViewBag.ApplicationDate is DateTime
+        ? (DateTime)ViewBag.ApplicationDate
+        : DateTime.Today;
+
+    var months = new[]
+    {
+        "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+        "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+    };
+
+    var dateText = ToBanglaDigits(applicationDate.Day.ToString("00")) +
+                   " " + months[applicationDate.Month - 1] + ", " +
+                   ToBanglaDigits(applicationDate.Year.ToString());
+}
+
+@functions {
+    private string ToBanglaDigits(string value)
+    {
+        if (String.IsNullOrEmpty(value)) return value;
+
+        return value
+            .Replace("0", "০")
+            .Replace("1", "১")
+            .Replace("2", "২")
+            .Replace("3", "৩")
+            .Replace("4", "৪")
+            .Replace("5", "৫")
+            .Replace("6", "৬")
+            .Replace("7", "৭")
+            .Replace("8", "৮")
+            .Replace("9", "৯");
+    }
+}
+
+<div class="confirmation-page">
+    <div class="confirmation-card">
+        <div class="success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+        </div>
+
+        <h1>আপনার আবেদন সফলভাবে জমা হয়েছে</h1>
+
+        <p class="lead">
+            আপনার তথ্য কেন্দ্রীয় ডাটাবেজে আনুষ্ঠানিকভাবে সংরক্ষণ করা হয়েছে।<br />
+            নির্বাচন কমিশন কর্তৃক যাচাই প্রক্রিয়া সম্পন্ন হলে পরবর্তী তথ্য প্রদান করা হবে।
+        </p>
+
+        <div class="app-no-box">
+            <small>আবেদনপত্র নং</small>
+            <strong>@appNo</strong>
+        </div>
+
+        <div class="confirmation-meta">
+            <span class="meta-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M16 3v4M8 3v4M3 10h18" />
+                </svg>
+                জমার তারিখ: @dateText
+            </span>
+
+            <span class="meta-pill status">
+                <span aria-hidden="true">●</span>
+                বর্তমান স্ট্যাটাস: যাচাই প্রক্রিয়াধীন
+            </span>
+        </div>
+
+        <div class="confirmation-actions">
+            <a href="@Url.Action("Index", "Nomination")" class="btn-new">
+                <span aria-hidden="true">＋</span>
+                নতুন আবেদন
+            </a>
+
+            <a href="@Url.Action("Index", "Home")" class="btn-home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 10.5L12 3l9 7.5" />
+                    <path d="M5.5 9.5V21h13V9.5M9 21v-6h6v6" />
+                </svg>
+                হোম পেজে ফিরুন
+            </a>
+        </div>
+
+        <div class="confirmation-note">
+            জরুরি প্রয়োজনে বা সংশোধনের জন্য নির্বাচন কমিশনের হেল্পডেস্কে যোগাযোগ করুন।
+        </div>
+    </div>
+</div>

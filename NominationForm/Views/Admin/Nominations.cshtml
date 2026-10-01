@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "সকল মনোনয়ন আবেদন";
+    ViewBag.PageTitle = "সকল মনোনয়ন আবেদন";
+    ViewBag.Active = "nominations";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var posts = (string[])ViewBag.Posts;
+}
+
+<!-- ============ Page head ============ -->
+<div class="page-card page-head">
+    <div class="ph-left">
+        <span class="ph-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1z" />
+                <path d="M16 6h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2" />
+                <path d="M9 13h6M9 17h4" />
+            </svg>
+        </span>
+        <div>
+            <h1>
+                সকল মনোনয়ন আবেদন
+                <span class="count-badge" id="totalBadge">মোট আবেদন: ০ টি</span>
+            </h1>
+            <p>ত্রিবার্ষিক নির্বাচন–২০২৭ | কেন্দ্রীয় পরিচালনা পর্ষদ প্রার্থী যাচাই ও অনুমোদন সেবা</p>
+        </div>
+    </div>
+    <div class="ph-actions">
+        <button type="button" class="btn-outline" id="btnSummaryPrint">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6" /><rect x="3" y="9" width="18" height="9" rx="2" /><path d="M6 14h12v7H6z" /></svg>
+            সামারি প্রিন্ট
+        </button>
+        <button type="button" class="btn-outline" id="btnExport">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M4 21h16" /></svg>
+            এক্সপোর্ট (CSV)
+        </button>
+    </div>
+</div>
+
+<!-- ============ Filters ============ -->
+<div class="page-card filter-bar">
+    <div class="fb-search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+        <input type="text" id="fSearch" placeholder="নাম, সদস্য নং, পদ বা মোবাইল দিয়ে খুঁজুন..." autocomplete="off" />
+    </div>
+
+    <div class="fb-select">
+        <select id="fPost" aria-label="পদ">
+            <option value="">সকল পদ</option>
+            @foreach (var p in posts)
+            {
+                <option value="@p">@p</option>
+            }
+        </select>
+    </div>
+
+    <div class="fb-select">
+        <select id="fStatus" aria-label="স্ট্যাটাস">
+            <option value="">সকল স্ট্যাটাস</option>
+            <option value="Pending">পেন্ডিং</option>
+            <option value="Approved">অনুমোদিত</option>
+            <option value="Rejected">বাতিল</option>
+        </select>
+    </div>
+
+    <div class="fb-date">
+        <input type="date" id="fDate" aria-label="আবেদনের তারিখ" />
+    </div>
+
+    <button type="button" class="fb-reset" id="btnReset" title="রিসেট">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
+    </button>
+</div>
+
+<!-- ============ Table ============ -->
+<div class="page-card table-card">
+    <div class="table-scroll">
+        <table class="nom-table">
+            <thead>
+                <tr>
+                    <th class="col-serial sortable" data-sort="serial">ক্রমিক <i class="sort-ic"></i></th>
+                    <th class="col-date sortable" data-sort="date">আবেদন ও তারিখ <i class="sort-ic"></i></th>
+                    <th class="col-cand sortable" data-sort="name">প্রার্থী <i class="sort-ic"></i></th>
+                    <th class="col-post sortable" data-sort="post">প্রার্থিতার পদ <i class="sort-ic"></i></th>
+                    <th class="col-status sortable" data-sort="status">স্ট্যাটাস <i class="sort-ic"></i></th>
+                    <th class="col-action">অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody id="nomBody"></tbody>
+        </table>
+    </div>
+
+    <div id="listState" class="list-state"></div>
+    <div id="sentinel" style="height:1px"></div>
+</div>
+
+<div class="info-bar">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+    আবেদন যাচাই করে অনুমোদন বা বাতিল করতে “দেখুন” আইকনে ক্লিক করুন।
+</div>
+
+@section scripts {
+    <script>
+        window.ADMIN_CFG = {
+            listUrl: '@Url.Action("NominationList", "Admin")',
+            detailsUrl: '@Url.Action("Details", "Admin")',
+            printUrl: '@Url.Action("Print", "Admin")',
+            summaryUrl: '@Url.Action("PrintSummary", "Admin")',
+            exportUrl: '@Url.Action("ExportCsv", "Admin")'
+        };
+    </script>
+    <script src="@Url.Content("~/Scripts/admin-nominations.js")"></script>
+}

@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="NominationDBModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Nominations">
+          <Key>
+            <PropertyRef Name="NominationId" />
+          </Key>
+          <Property Name="NominationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApplicationNo" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="ApplicationDate" Type="date" Nullable="false" />
+          <Property Name="CandidateName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MemberNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="OrganizationId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Designation" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="FatherOrHusbandName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MotherName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="DateOfBirth" Type="date" Nullable="false" />
+          <Property Name="NID" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="PresentAddress" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="PermanentAddress" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Mobile" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="150" />
+          <Property Name="DesiredPost" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="MembershipDate" Type="date" Nullable="false" />
+          <Property Name="IsMembershipActive" Type="bit" Nullable="false" />
+          <Property Name="IsSavingsUpdated" Type="bit" Nullable="false" />
+          <Property Name="IsLoanUpdated" Type="bit" Nullable="false" />
+          <Property Name="IsEligible" Type="bit" Nullable="false" />
+          <Property Name="CandidateDeclarationAccepted" Type="bit" Nullable="false" />
+          <Property Name="ProposerName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="ProposerMemberNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ProposerPost" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ProposerMobile" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="ProposerDate" Type="date" Nullable="false" />
+          <Property Name="SupporterName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="SupporterMemberNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SupporterMobile" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="SupporterDate" Type="date" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="StatusUpdatedAt" Type="datetime2" Precision="7" />
+          <Property Name="StatusUpdatedBy" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <Function Name="Nomination_GetAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="Nomination_GetById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="NominationId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="Nomination_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ApplicationNo" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationDate" Type="date" Mode="In" />
+          <Parameter Name="CandidateName" Type="nvarchar" Mode="In" />
+          <Parameter Name="MemberNo" Type="nvarchar" Mode="In" />
+          <Parameter Name="OrganizationId" Type="nvarchar" Mode="In" />
+          <Parameter Name="Designation" Type="nvarchar" Mode="In" />
+          <Parameter Name="FatherOrHusbandName" Type="nvarchar" Mode="In" />
+          <Parameter Name="MotherName" Type="nvarchar" Mode="In" />
+          <Parameter Name="DateOfBirth" Type="date" Mode="In" />
+          <Parameter Name="NID" Type="nvarchar" Mode="In" />
+          <Parameter Name="PresentAddress" Type="nvarchar" Mode="In" />
+          <Parameter Name="PermanentAddress" Type="nvarchar" Mode="In" />
+          <Parameter Name="Mobile" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="DesiredPost" Type="nvarchar" Mode="In" />
+          <Parameter Name="MembershipDate" Type="date" Mode="In" />
+          <Parameter Name="IsMembershipActive" Type="bit" Mode="In" />
+          <Parameter Name="IsSavingsUpdated" Type="bit" Mode="In" />
+          <Parameter Name="IsLoanUpdated" Type="bit" Mode="In" />
+          <Parameter Name="IsEligible" Type="bit" Mode="In" />
+          <Parameter Name="CandidateDeclarationAccepted" Type="bit" Mode="In" />
+          <Parameter Name="ProposerName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProposerMemberNo" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProposerPost" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProposerMobile" Type="nvarchar" Mode="In" />
+          <Parameter Name="ProposerDate" Type="date" Mode="In" />
+          <Parameter Name="SupporterName" Type="nvarchar" Mode="In" />
+          <Parameter Name="SupporterMemberNo" Type="nvarchar" Mode="In" />
+          <Parameter Name="SupporterMobile" Type="nvarchar" Mode="In" />
+          <Parameter Name="SupporterDate" Type="date" Mode="In" />
+        </Function>
+        <EntityContainer Name="NominationDBModel1StoreContainer">
+          <EntitySet Name="Nominations" EntityType="Self.Nominations" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="NominationDBModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Nomination">
+          <Key>
+            <PropertyRef Name="NominationId" />
+          </Key>
+          <Property Name="NominationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApplicationNo" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ApplicationDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CandidateName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MemberNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OrganizationId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Designation" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FatherOrHusbandName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MotherName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateOfBirth" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="NID" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PresentAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PermanentAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Mobile" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="DesiredPost" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MembershipDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IsMembershipActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsSavingsUpdated" Type="Boolean" Nullable="false" />
+          <Property Name="IsLoanUpdated" Type="Boolean" Nullable="false" />
+          <Property Name="IsEligible" Type="Boolean" Nullable="false" />
+          <Property Name="CandidateDeclarationAccepted" Type="Boolean" Nullable="false" />
+          <Property Name="ProposerName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProposerMemberNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProposerPost" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProposerMobile" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProposerDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SupporterName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SupporterMemberNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SupporterMobile" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SupporterDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="StatusUpdatedAt" Type="DateTime" Precision="7" />
+          <Property Name="StatusUpdatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityContainer Name="NominationDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Nominations" EntityType="Self.Nomination" />
+          <FunctionImport Name="Nomination_GetAll" ReturnType="Collection(NominationDBModel1.Nomination_GetAll_Result)" />
+          <FunctionImport Name="Nomination_GetById" ReturnType="Collection(NominationDBModel1.Nomination_GetById_Result)">
+            <Parameter Name="NominationId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Nomination_Insert" ReturnType="Collection(Int32)">
+            <Parameter Name="ApplicationNo" Mode="In" Type="String" />
+            <Parameter Name="ApplicationDate" Mode="In" Type="DateTime" />
+            <Parameter Name="CandidateName" Mode="In" Type="String" />
+            <Parameter Name="MemberNo" Mode="In" Type="String" />
+            <Parameter Name="OrganizationId" Mode="In" Type="String" />
+            <Parameter Name="Designation" Mode="In" Type="String" />
+            <Parameter Name="FatherOrHusbandName" Mode="In" Type="String" />
+            <Parameter Name="MotherName" Mode="In" Type="String" />
+            <Parameter Name="DateOfBirth" Mode="In" Type="DateTime" />
+            <Parameter Name="NID" Mode="In" Type="String" />
+            <Parameter Name="PresentAddress" Mode="In" Type="String" />
+            <Parameter Name="PermanentAddress" Mode="In" Type="String" />
+            <Parameter Name="Mobile" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="DesiredPost" Mode="In" Type="String" />
+            <Parameter Name="MembershipDate" Mode="In" Type="DateTime" />
+            <Parameter Name="IsMembershipActive" Mode="In" Type="Boolean" />
+            <Parameter Name="IsSavingsUpdated" Mode="In" Type="Boolean" />
+            <Parameter Name="IsLoanUpdated" Mode="In" Type="Boolean" />
+            <Parameter Name="IsEligible" Mode="In" Type="Boolean" />
+            <Parameter Name="CandidateDeclarationAccepted" Mode="In" Type="Boolean" />
+            <Parameter Name="ProposerName" Mode="In" Type="String" />
+            <Parameter Name="ProposerMemberNo" Mode="In" Type="String" />
+            <Parameter Name="ProposerPost" Mode="In" Type="String" />
+            <Parameter Name="ProposerMobile" Mode="In" Type="String" />
+            <Parameter Name="ProposerDate" Mode="In" Type="DateTime" />
+            <Parameter Name="SupporterName" Mode="In" Type="String" />
+            <Parameter Name="SupporterMemberNo" Mode="In" Type="String" />
+            <Parameter Name="SupporterMobile" Mode="In" Type="String" />
+            <Parameter Name="SupporterDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="Nomination_GetAll_Result">
+          <Property Type="Int32" Name="NominationId" Nullable="false" />
+          <Property Type="String" Name="ApplicationNo" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="ApplicationDate" Nullable="false" />
+          <Property Type="String" Name="CandidateName" Nullable="false" MaxLength="200" />
+          <Property Type="String" Name="MemberNo" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="DesiredPost" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="CreatedAt" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="Nomination_GetById_Result">
+          <Property Type="Int32" Name="NominationId" Nullable="false" />
+          <Property Type="String" Name="ApplicationNo" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="ApplicationDate" Nullable="false" />
+          <Property Type="String" Name="CandidateName" Nullable="false" MaxLength="200" />
+          <Property Type="String" Name="MemberNo" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="OrganizationId" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Designation" Nullable="false" MaxLength="150" />
+          <Property Type="String" Name="FatherOrHusbandName" Nullable="false" MaxLength="200" />
+          <Property Type="String" Name="MotherName" Nullable="false" MaxLength="200" />
+          <Property Type="DateTime" Name="DateOfBirth" Nullable="false" />
+          <Property Type="String" Name="NID" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="PresentAddress" Nullable="false" MaxLength="500" />
+          <Property Type="String" Name="PermanentAddress" Nullable="false" MaxLength="500" />
+          <Property Type="String" Name="Mobile" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="150" />
+          <Property Type="String" Name="DesiredPost" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="MembershipDate" Nullable="false" />
+          <Property Type="Boolean" Name="IsMembershipActive" Nullable="false" />
+          <Property Type="Boolean" Name="IsSavingsUpdated" Nullable="false" />
+          <Property Type="Boolean" Name="IsLoanUpdated" Nullable="false" />
+          <Property Type="Boolean" Name="IsEligible" Nullable="false" />
+          <Property Type="Boolean" Name="CandidateDeclarationAccepted" Nullable="false" />
+          <Property Type="String" Name="ProposerName" Nullable="false" MaxLength="200" />
+          <Property Type="String" Name="ProposerMemberNo" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ProposerPost" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="ProposerMobile" Nullable="false" MaxLength="20" />
+          <Property Type="DateTime" Name="ProposerDate" Nullable="false" />
+          <Property Type="String" Name="SupporterName" Nullable="false" MaxLength="200" />
+          <Property Type="String" Name="SupporterMemberNo" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="SupporterMobile" Nullable="false" MaxLength="20" />
+          <Property Type="DateTime" Name="SupporterDate" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedAt" Nullable="false" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="20" />
+          <Property Type="DateTime" Name="StatusUpdatedAt" Nullable="true" />
+          <Property Type="String" Name="StatusUpdatedBy" Nullable="true" MaxLength="100" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="NominationDBModel1StoreContainer" CdmEntityContainer="NominationDBEntities">
+          <EntitySetMapping Name="Nominations">
+            <EntityTypeMapping TypeName="NominationDBModel1.Nomination">
+              <MappingFragment StoreEntitySet="Nominations">
+                <ScalarProperty Name="StatusUpdatedBy" ColumnName="StatusUpdatedBy" />
+                <ScalarProperty Name="StatusUpdatedAt" ColumnName="StatusUpdatedAt" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="NominationId" ColumnName="NominationId" />
+                <ScalarProperty Name="ApplicationNo" ColumnName="ApplicationNo" />
+                <ScalarProperty Name="ApplicationDate" ColumnName="ApplicationDate" />
+                <ScalarProperty Name="CandidateName" ColumnName="CandidateName" />
+                <ScalarProperty Name="MemberNo" ColumnName="MemberNo" />
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+                <ScalarProperty Name="Designation" ColumnName="Designation" />
+                <ScalarProperty Name="FatherOrHusbandName" ColumnName="FatherOrHusbandName" />
+                <ScalarProperty Name="MotherName" ColumnName="MotherName" />
+                <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
+                <ScalarProperty Name="NID" ColumnName="NID" />
+                <ScalarProperty Name="PresentAddress" ColumnName="PresentAddress" />
+                <ScalarProperty Name="PermanentAddress" ColumnName="PermanentAddress" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="DesiredPost" ColumnName="DesiredPost" />
+                <ScalarProperty Name="MembershipDate" ColumnName="MembershipDate" />
+                <ScalarProperty Name="IsMembershipActive" ColumnName="IsMembershipActive" />
+                <ScalarProperty Name="IsSavingsUpdated" ColumnName="IsSavingsUpdated" />
+                <ScalarProperty Name="IsLoanUpdated" ColumnName="IsLoanUpdated" />
+                <ScalarProperty Name="IsEligible" ColumnName="IsEligible" />
+                <ScalarProperty Name="CandidateDeclarationAccepted" ColumnName="CandidateDeclarationAccepted" />
+                <ScalarProperty Name="ProposerName" ColumnName="ProposerName" />
+                <ScalarProperty Name="ProposerMemberNo" ColumnName="ProposerMemberNo" />
+                <ScalarProperty Name="ProposerPost" ColumnName="ProposerPost" />
+                <ScalarProperty Name="ProposerMobile" ColumnName="ProposerMobile" />
+                <ScalarProperty Name="ProposerDate" ColumnName="ProposerDate" />
+                <ScalarProperty Name="SupporterName" ColumnName="SupporterName" />
+                <ScalarProperty Name="SupporterMemberNo" ColumnName="SupporterMemberNo" />
+                <ScalarProperty Name="SupporterMobile" ColumnName="SupporterMobile" />
+                <ScalarProperty Name="SupporterDate" ColumnName="SupporterDate" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Nomination_GetAll" FunctionName="NominationDBModel1.Store.Nomination_GetAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NominationDBModel1.Nomination_GetAll_Result">
+                <ScalarProperty Name="NominationId" ColumnName="NominationId" />
+                <ScalarProperty Name="ApplicationNo" ColumnName="ApplicationNo" />
+                <ScalarProperty Name="ApplicationDate" ColumnName="ApplicationDate" />
+                <ScalarProperty Name="CandidateName" ColumnName="CandidateName" />
+                <ScalarProperty Name="MemberNo" ColumnName="MemberNo" />
+                <ScalarProperty Name="DesiredPost" ColumnName="DesiredPost" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Nomination_GetById" FunctionName="NominationDBModel1.Store.Nomination_GetById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NominationDBModel1.Nomination_GetById_Result">
+                <ScalarProperty Name="NominationId" ColumnName="NominationId" />
+                <ScalarProperty Name="ApplicationNo" ColumnName="ApplicationNo" />
+                <ScalarProperty Name="ApplicationDate" ColumnName="ApplicationDate" />
+                <ScalarProperty Name="CandidateName" ColumnName="CandidateName" />
+                <ScalarProperty Name="MemberNo" ColumnName="MemberNo" />
+                <ScalarProperty Name="OrganizationId" ColumnName="OrganizationId" />
+                <ScalarProperty Name="Designation" ColumnName="Designation" />
+                <ScalarProperty Name="FatherOrHusbandName" ColumnName="FatherOrHusbandName" />
+                <ScalarProperty Name="MotherName" ColumnName="MotherName" />
+                <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
+                <ScalarProperty Name="NID" ColumnName="NID" />
+                <ScalarProperty Name="PresentAddress" ColumnName="PresentAddress" />
+                <ScalarProperty Name="PermanentAddress" ColumnName="PermanentAddress" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="DesiredPost" ColumnName="DesiredPost" />
+                <ScalarProperty Name="MembershipDate" ColumnName="MembershipDate" />
+                <ScalarProperty Name="IsMembershipActive" ColumnName="IsMembershipActive" />
+                <ScalarProperty Name="IsSavingsUpdated" ColumnName="IsSavingsUpdated" />
+                <ScalarProperty Name="IsLoanUpdated" ColumnName="IsLoanUpdated" />
+                <ScalarProperty Name="IsEligible" ColumnName="IsEligible" />
+                <ScalarProperty Name="CandidateDeclarationAccepted" ColumnName="CandidateDeclarationAccepted" />
+                <ScalarProperty Name="ProposerName" ColumnName="ProposerName" />
+                <ScalarProperty Name="ProposerMemberNo" ColumnName="ProposerMemberNo" />
+                <ScalarProperty Name="ProposerPost" ColumnName="ProposerPost" />
+                <ScalarProperty Name="ProposerMobile" ColumnName="ProposerMobile" />
+                <ScalarProperty Name="ProposerDate" ColumnName="ProposerDate" />
+                <ScalarProperty Name="SupporterName" ColumnName="SupporterName" />
+                <ScalarProperty Name="SupporterMemberNo" ColumnName="SupporterMemberNo" />
+                <ScalarProperty Name="SupporterMobile" ColumnName="SupporterMobile" />
+                <ScalarProperty Name="SupporterDate" ColumnName="SupporterDate" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="StatusUpdatedAt" ColumnName="StatusUpdatedAt" />
+                <ScalarProperty Name="StatusUpdatedBy" ColumnName="StatusUpdatedBy" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Nomination_Insert" FunctionName="NominationDBModel1.Store.Nomination_Insert" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

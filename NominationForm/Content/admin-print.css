@@ -1,0 +1,329 @@
+﻿@font-face {
+    font-family: 'NikoshBAN';
+    src: url('pdf-fonts/NikoshBAN.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0980-09FF, U+0964-0965, U+200C-200D, U+25CC;
+}
+
+@font-face {
+    font-family: 'NotoSansBengali';
+    src: url('pdf-fonts/NotoSansBengali-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NotoSansBengali';
+    src: url('pdf-fonts/NotoSansBengali-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 9mm 10mm;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #e9eeec;
+    color: #111;
+    font-family: 'NikoshBAN', 'NotoSansBengali', 'Nirmala UI', 'Segoe UI', sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.28;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+    body.summary-body {
+        font-size: 9pt;
+    }
+
+.print-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #d6dfdc;
+}
+
+.pt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1px solid #c9d6d2;
+    background: #fff;
+    color: #17302b;
+    font-family: inherit;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+    .pt-btn.primary {
+        background: #0c3d33;
+        border-color: #0c3d33;
+        color: #fff;
+    }
+
+    .pt-btn:hover:not(:disabled) {
+        filter: brightness(.96);
+    }
+
+    .pt-btn:disabled {
+        opacity: .6;
+        cursor: wait;
+    }
+
+.paper {
+    width: 210mm;
+    max-width: 100%;
+    margin: 12px auto;
+    padding: 7mm 8mm;
+    background: #fff;
+    box-shadow: 0 2px 14px rgba(0,0,0,.12);
+}
+
+body.pdf-mode .paper {
+    box-shadow: none;
+    margin: 0;
+}
+
+.form-header {
+    text-align: center;
+    border-bottom: 3px double #173f46;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.fh-org {
+    font-size: 10.5pt;
+    font-weight: bold;
+}
+
+.form-header h1 {
+    margin: 1px 0;
+    font-size: 15pt;
+    line-height: 1.2;
+}
+
+.form-header h3 {
+    margin: 1px 0;
+    font-size: 10.5pt;
+    line-height: 1.2;
+    font-weight: normal;
+}
+
+.fh-meta {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    font-size: 9.5pt;
+}
+
+.section {
+    margin: 8px 0;
+    page-break-inside: auto;
+    break-inside: auto;
+}
+
+    .section h2 {
+        margin: 0 0 3px;
+        font-size: 10.5pt;
+        line-height: 1.2;
+        border-bottom: 1px solid #777;
+        padding-bottom: 2px;
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .section p {
+        margin: 2px 0;
+    }
+
+table.kv {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+    table.kv th,
+    table.kv td {
+        border: 1px solid #b9c3c0;
+        padding: 2.2px 5px;
+        vertical-align: top;
+        text-align: left;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    table.kv th {
+        width: 36%;
+        background: #f1f5f4;
+        font-weight: bold;
+    }
+
+        table.kv th.sub {
+            width: auto;
+            background: #dde8e4;
+            text-align: center;
+        }
+
+    table.kv tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+    .two-col table.kv th {
+        width: 43%;
+    }
+
+ol.declaration {
+    margin: 3px 0 4px 17px;
+    padding: 0;
+}
+
+    ol.declaration li {
+        margin: 1.5px 0;
+        padding-left: 2px;
+        line-height: 1.25;
+    }
+
+.accepted {
+    margin-top: 3px;
+}
+
+.sign-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 20px;
+    text-align: center;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.sign-box {
+    width: 46%;
+    font-size: 9pt;
+    line-height: 1.25;
+}
+
+.sign-line {
+    border-top: 1px solid #111;
+    margin-bottom: 2px;
+}
+
+table.grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+}
+
+    table.grid th,
+    table.grid td {
+        border: 1px solid #aeb9b6;
+        padding: 3px 5px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    table.grid thead th {
+        background: #e8efed;
+    }
+
+    table.grid thead {
+        display: table-header-group;
+    }
+
+    table.grid tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+@media screen {
+    body.pdf-mode {
+        background: #fff;
+    }
+
+        body.pdf-mode .paper {
+            width: 190mm;
+            max-width: 190mm;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+}
+
+@media print {
+    html, body {
+        width: 100%;
+        background: #fff !important;
+    }
+
+    body {
+        font-size: 9.5pt !important;
+        color: #111 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .paper {
+        width: auto;
+        max-width: none;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+    }
+
+    .section {
+        page-break-inside: auto;
+        break-inside: auto;
+    }
+
+        .section h2 {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+    table.kv th,
+    table.kv td,
+    table.kv th.sub,
+    table.grid thead th {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

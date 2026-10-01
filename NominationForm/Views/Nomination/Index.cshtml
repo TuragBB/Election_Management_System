@@ -1,0 +1,306 @@
+﻿@model NominationSystem.Models.NominationViewModel
+
+@{
+    ViewBag.Title = "নির্বাচনে অংশগ্রহণের আবেদনপত্র";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+    var yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+}
+
+<div class="nomination-container">
+    <div class="nomination-heading">
+        <div class="heading-badge">STAFF WELFARE FUND</div>
+        <h1>নির্বাচনে অংশগ্রহণের আবেদন / মনোনয়ন ফরম</h1>
+        <h3>ত্রিবার্ষিক নির্বাচন–২০২৭</h3>
+        <p>আবেদনপত্র নং: স্বয়ংক্রিয়ভাবে তৈরি হবে</p>
+    </div>
+
+    @using (Html.BeginForm("Index", "Nomination", FormMethod.Post, new { id = "nominationForm", autocomplete = "off" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false, "", new { @class = "validation-summary" })
+
+        <!-- ক. প্রার্থীর ব্যক্তিগত তথ্য -->
+        <section class="form-section">
+            <h2><span class="sec-badge">ক</span><span>প্রার্থীর ব্যক্তিগত তথ্য</span></h2>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="CandidateName">প্রার্থীর নাম<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.CandidateName, new { @class = "form-control", id = "CandidateName", placeholder = "সম্পূর্ণ নাম" })
+                    @Html.ValidationMessageFor(m => m.CandidateName)
+                </div>
+
+                <div class="field">
+                    <label for="MemberNo">সদস্য নং<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", id = "MemberNo", placeholder = "সদস্য নম্বর" })
+                    @Html.ValidationMessageFor(m => m.MemberNo)
+                </div>
+
+                <div class="field">
+                    <label for="OrganizationId">সংস্থার আইডি নং<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.OrganizationId, new { @class = "form-control", id = "OrganizationId", placeholder = "সংস্থার আইডি নম্বর" })
+                    @Html.ValidationMessageFor(m => m.OrganizationId)
+                </div>
+
+                <div class="field">
+                    <label for="Designation">সংস্থার পদবী<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.Designation, new { @class = "form-control", id = "Designation", placeholder = "পদবী" })
+                    @Html.ValidationMessageFor(m => m.Designation)
+                </div>
+
+                <div class="field">
+                    <label for="FatherOrHusbandName">পিতার/স্বামীর নাম<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.FatherOrHusbandName, new { @class = "form-control", id = "FatherOrHusbandName", placeholder = "পিতার/স্বামীর নাম" })
+                    @Html.ValidationMessageFor(m => m.FatherOrHusbandName)
+                </div>
+
+                <div class="field">
+                    <label for="MotherName">মাতার নাম<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.MotherName, new { @class = "form-control", id = "MotherName", placeholder = "মাতার নাম" })
+                    @Html.ValidationMessageFor(m => m.MotherName)
+                </div>
+
+                <div class="field">
+                    <label for="DateOfBirth">জন্মতারিখ<span class="required-mark">*</span></label>
+                    <div class="date-field">
+                        @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control premium-date", id = "DateOfBirth", type = "date", max = yesterday })
+                        <button type="button" class="date-picker-trigger" data-target="DateOfBirth" aria-label="জন্মতারিখ নির্বাচন করুন">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.DateOfBirth)
+                </div>
+
+                <div class="field">
+                    <label for="NID">জাতীয় পরিচয়পত্র নং<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.NID, new { @class = "form-control", id = "NID", placeholder = "NID নম্বর" })
+                    @Html.ValidationMessageFor(m => m.NID)
+                </div>
+
+                <div class="field full-width">
+                    <label for="PresentAddress">বর্তমান ঠিকানা<span class="required-mark">*</span></label>
+                    @Html.TextAreaFor(m => m.PresentAddress, new { @class = "form-control", id = "PresentAddress", rows = 2, placeholder = "বর্তমান ঠিকানা লিখুন" })
+                    @Html.ValidationMessageFor(m => m.PresentAddress)
+                </div>
+
+                <div class="field full-width">
+                    <label for="PermanentAddress">স্থায়ী ঠিকানা<span class="required-mark">*</span></label>
+                    @Html.TextAreaFor(m => m.PermanentAddress, new { @class = "form-control", id = "PermanentAddress", rows = 2, placeholder = "স্থায়ী ঠিকানা লিখুন" })
+                    @Html.ValidationMessageFor(m => m.PermanentAddress)
+                </div>
+
+                <div class="field">
+                    <label for="Mobile">মোবাইল নম্বর<span class="required-mark">*</span></label>
+                    @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control", id = "Mobile", placeholder = "01XXXXXXXXX", inputmode = "tel", maxlength = "14" })
+                    @Html.ValidationMessageFor(m => m.Mobile)
+                </div>
+
+                <div class="field">
+                    <label for="Email">ই-মেইল (যদি থাকে)</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", id = "Email", type = "email", placeholder = "example@domain.com" })
+                    @Html.ValidationMessageFor(m => m.Email)
+                </div>
+            </div>
+        </section>
+
+        <!-- খ. পছন্দের পদ -->
+        <section class="form-section">
+            <h2><span class="sec-badge">খ</span><span>যে পদের জন্য প্রার্থী হতে ইচ্ছুক</span></h2>
+            <p>প্রার্থীর পছন্দের নির্বাচনী পদ নির্বাচন করুন।<span class="required-mark">*</span></p>
+
+            <div class="radio-grid">
+                @foreach (var post in new[] { "সভাপতি", "সহ-সভাপতি", "সাধারণ সম্পাদক", "যুগ্ম সম্পাদক", "কোষাধ্যক্ষ", "সহকারী কোষাধ্যক্ষ", "সম্মানিত সদস্য" })
+                {
+                    <label class="radio-option">
+                        @Html.RadioButtonFor(m => m.DesiredPost, post)
+                        <span>@post</span>
+                    </label>
+                }
+            </div>
+            @Html.ValidationMessageFor(m => m.DesiredPost)
+
+            <div class="field">
+                <label for="SelectedPostText">নির্বাচিত পদের নাম</label>
+                <input type="text" id="SelectedPostText" class="form-control" placeholder="উপরের পদ নির্বাচন করুন" readonly />
+            </div>
+        </section>
+
+        <!-- গ. সদস্যপদ সংক্রান্ত তথ্য -->
+        <section class="form-section membership-section">
+            <h2><span class="sec-badge">গ</span><span>সদস্যপদ সংক্রান্ত তথ্য</span></h2>
+
+            <div class="membership-date-row">
+                <div class="field membership-date-field">
+                    <label for="MembershipDate">সমিতির সদস্য হওয়ার তারিখ<span class="required-mark">*</span></label>
+                    <div class="date-field premium-date-field">
+                        @Html.TextBoxFor(m => m.MembershipDate, "{0:yyyy-MM-dd}", new { @class = "form-control premium-date", id = "MembershipDate", type = "date", max = today })
+                        <button type="button" class="date-picker-trigger" data-target="MembershipDate" aria-label="সমিতির সদস্য হওয়ার তারিখ নির্বাচন করুন" tabindex="-1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18M7 14h.01M12 14h.01M17 14h.01M7 18h.01M12 18h.01" /></svg>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.MembershipDate)
+                </div>
+            </div>
+
+            <div class="membership-questions">
+                <div class="membership-question-row">
+                    <span class="membership-question-text">১. সদস্যপদ বর্তমানে সক্রিয় কি না:</span>
+                    <div class="yes-no-group">
+                        <label>@Html.RadioButtonFor(m => m.IsMembershipActive, true)<span>হ্যাঁ</span></label>
+                        <label>@Html.RadioButtonFor(m => m.IsMembershipActive, false)<span>না</span></label>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.IsMembershipActive)
+
+                <div class="membership-question-row">
+                    <span class="membership-question-text">২. সমিতির সঞ্চয় হালনাগাদ আছে কি না:</span>
+                    <div class="yes-no-group">
+                        <label>@Html.RadioButtonFor(m => m.IsSavingsUpdated, true)<span>হ্যাঁ</span></label>
+                        <label>@Html.RadioButtonFor(m => m.IsSavingsUpdated, false)<span>না</span></label>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.IsSavingsUpdated)
+
+                <div class="membership-question-row">
+                    <span class="membership-question-text">৩. সমিতি থেকে গ্রহণকৃত ঋণ (যদি ঋণ গ্রহণ করে থাকেন) হালনাগাদ আছে কি না:</span>
+                    <div class="yes-no-group">
+                        <label>@Html.RadioButtonFor(m => m.IsLoanUpdated, true)<span>হ্যাঁ</span></label>
+                        <label>@Html.RadioButtonFor(m => m.IsLoanUpdated, false)<span>না</span></label>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.IsLoanUpdated)
+
+                <div class="membership-question-row">
+                    <span class="membership-question-text">৪. সমিতির গঠনতন্ত্র অনুযায়ী প্রার্থী হওয়ার যোগ্যতা পূরণ করেন কি না:</span>
+                    <div class="yes-no-group">
+                        <label>@Html.RadioButtonFor(m => m.IsEligible, true)<span>হ্যাঁ</span></label>
+                        <label>@Html.RadioButtonFor(m => m.IsEligible, false)<span>না</span></label>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.IsEligible)
+            </div>
+        </section>
+
+        <!-- ঘ. ঘোষণা -->
+        <section class="form-section declaration-section">
+            <h2><span class="sec-badge">ঘ</span><span>প্রার্থীর ঘোষণা</span></h2>
+
+            <div class="declaration-box">
+                <div class="declaration-intro">আমি এই মর্মে ঘোষণা করছি যে—</div>
+                <ol class="declaration-list">
+                    <li>উপরোক্ত সকল তথ্য আমার জ্ঞান ও বিশ্বাস অনুযায়ী সঠিক ও সত্য।</li>
+                    <li>আমি সমিতির গঠনতন্ত্র, নির্বাচন সংক্রান্ত বিধি এবং নির্বাচন কমিশনের নির্দেশনা মেনে চলব।</li>
+                    <li>নির্বাচনে অংশগ্রহণের জন্য গঠনতন্ত্রে নির্ধারিত সকল যোগ্যতা আমি পূরণ করি।</li>
+                    <li>আমার কোনো তথ্য অসত্য, অসম্পূর্ণ বা গোপন প্রমাণিত হলে নির্বাচন কমিশন সমিতির গঠনতন্ত্র অনুযায়ী প্রয়োজনীয় ব্যবস্থা গ্রহণ করতে পারবেন।</li>
+                    <li>নির্বাচনী আচরণবিধি মেনে চলব এবং কোনো ধরনের অনৈতিক প্রভাব, চাপ, অর্থ বা সুবিধা প্রদানের চেষ্টা করব না।</li>
+                    <li>নির্বাচনের ফলাফল ও নির্বাচন কমিশনের বৈধ সিদ্ধান্তকে গঠনতন্ত্রের বিধান অনুযায়ী সম্মান করব।</li>
+                </ol>
+
+                <label class="declaration-check">
+                    @Html.CheckBoxFor(m => m.CandidateDeclarationAccepted, new { id = "CandidateDeclarationAccepted" })
+                    <span>আমি উপরোক্ত ঘোষণার সকল শর্ত পড়েছি, বুঝেছি ও সম্মতি প্রদান করছি।<span class="required-mark">*</span></span>
+                </label>
+                @Html.ValidationMessageFor(m => m.CandidateDeclarationAccepted)
+            </div>
+        </section>
+
+        <!-- ঙ. প্রস্তাবকারী ও সমর্থনকারী -->
+        <section class="form-section">
+            <h2><span class="sec-badge">ঙ</span><span>প্রস্তাবকারী ও সমর্থনকারীর প্রত্যয়ন</span></h2>
+
+            <div class="certification-grid">
+                <div class="person-card">
+                    <h3>প্রস্তাবকারী সদস্য</h3>
+                    <p>আমি নিম্নস্বাক্ষরকারী উপরোক্ত প্রার্থীকে নির্বাচনের জন্য প্রস্তাব করছি।</p>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="ProposerName">প্রস্তাবকারীর নাম<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.ProposerName, new { @class = "form-control", id = "ProposerName", placeholder = "নাম" })
+                            @Html.ValidationMessageFor(m => m.ProposerName)
+                        </div>
+
+                        <div class="field">
+                            <label for="ProposerMemberNo">সদস্য নং<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.ProposerMemberNo, new { @class = "form-control", id = "ProposerMemberNo", placeholder = "সদস্য নম্বর" })
+                            @Html.ValidationMessageFor(m => m.ProposerMemberNo)
+                        </div>
+
+                        <div class="field">
+                            <label for="ProposerPost">যে পদে প্রস্তাব করছেন<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.ProposerPost, new { @class = "form-control", id = "ProposerPost", placeholder = "পদের নাম" })
+                            @Html.ValidationMessageFor(m => m.ProposerPost)
+                        </div>
+
+                        <div class="field">
+                            <label for="ProposerMobile">মোবাইল<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.ProposerMobile, new { @class = "form-control", id = "ProposerMobile", placeholder = "01XXXXXXXXX", inputmode = "tel", maxlength = "14" })
+                            @Html.ValidationMessageFor(m => m.ProposerMobile)
+                        </div>
+
+                        <div class="field">
+                            <label for="ProposerDate">তারিখ<span class="required-mark">*</span></label>
+                            <div class="date-field">
+                                @Html.TextBoxFor(m => m.ProposerDate, "{0:yyyy-MM-dd}", new { @class = "form-control premium-date", id = "ProposerDate", type = "date", max = today })
+                                <button type="button" class="date-picker-trigger" data-target="ProposerDate" aria-label="প্রস্তাবকারীর তারিখ নির্বাচন করুন">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
+                                </button>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.ProposerDate)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="person-card">
+                    <h3>সমর্থনকারী সদস্য</h3>
+                    <p>আমি উপরোক্ত প্রার্থীর প্রার্থিতাকে সমর্থন করছি।</p>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="SupporterName">সমর্থনকারীর নাম<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.SupporterName, new { @class = "form-control", id = "SupporterName", placeholder = "নাম" })
+                            @Html.ValidationMessageFor(m => m.SupporterName)
+                        </div>
+
+                        <div class="field">
+                            <label for="SupporterMemberNo">সদস্য নং<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.SupporterMemberNo, new { @class = "form-control", id = "SupporterMemberNo", placeholder = "সদস্য নম্বর" })
+                            @Html.ValidationMessageFor(m => m.SupporterMemberNo)
+                        </div>
+
+                        <div class="field">
+                            <label for="SupporterMobile">মোবাইল<span class="required-mark">*</span></label>
+                            @Html.TextBoxFor(m => m.SupporterMobile, new { @class = "form-control", id = "SupporterMobile", placeholder = "01XXXXXXXXX", inputmode = "tel", maxlength = "14" })
+                            @Html.ValidationMessageFor(m => m.SupporterMobile)
+                        </div>
+
+                        <div class="field">
+                            <label for="SupporterDate">তারিখ<span class="required-mark">*</span></label>
+                            <div class="date-field">
+                                @Html.TextBoxFor(m => m.SupporterDate, "{0:yyyy-MM-dd}", new { @class = "form-control premium-date", id = "SupporterDate", type = "date", max = today })
+                                <button type="button" class="date-picker-trigger" data-target="SupporterDate" aria-label="সমর্থনকারীর তারিখ নির্বাচন করুন">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
+                                </button>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.SupporterDate)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="submit-area">
+            <button type="submit" class="btn-primary-custom" id="submitNomination">
+                আবেদন জমা দিন
+            </button>
+        </div>
+    }
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/Scripts/nomination.js"></script>
+}
