@@ -1,0 +1,69 @@
+﻿@model NominationSystem.Models.GoogleCompleteViewModel
+
+@{
+    ViewBag.Title = "প্রোফাইল সম্পন্ন করুন";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
+    bool isMember = Model.AccountType == AccountTypes.Member;
+    string memberCls = isMember ? "a-field a-member" : "a-field a-member is-hidden";
+}
+
+<div class="acc-head">
+    <span class="acc-head-icon">@VoteIcons.Get("check", 22)</span>
+    <h1>প্রায় শেষ!</h1>
+    <p>Google অ্যাকাউন্ট যাচাই হয়েছে। অ্যাকাউন্ট চালু করতে আর কয়েকটি তথ্য দিন।</p>
+</div>
+
+@using (Html.BeginForm("GoogleComplete", "Account", FormMethod.Post, new { id = "registerForm", @class = "acc-form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ReturnUrl)
+    @Html.ValidationSummary(true, "", new { @class = "a-alert" })
+
+    <div class="a-seg" role="radiogroup" aria-label="অ্যাকাউন্টের ধরন">
+        <label class="a-seg-opt">
+            @Html.RadioButtonFor(m => m.AccountType, AccountTypes.Voter, new { id = "type_voter" })
+            <span class="a-seg-body">
+                <b>সাধারণ ভোটার</b>
+                <small>শুধু ভোট দিতে পারবেন</small>
+            </span>
+        </label>
+        <label class="a-seg-opt">
+            @Html.RadioButtonFor(m => m.AccountType, AccountTypes.Member, new { id = "type_member" })
+            <span class="a-seg-body">
+                <b>সদস্য</b>
+                <small>মনোনয়ন ফরম + ভোট</small>
+            </span>
+        </label>
+    </div>
+
+    <div class="a-field">
+        <label>Google ই-মেইল</label>
+        <div class="a-static">@Model.Email</div>
+    </div>
+
+    <div class="a-field">
+        <label for="FullName">পূর্ণ নাম</label>
+        @Html.TextBoxFor(m => m.FullName, new { @class = "a-input", autocomplete = "name", placeholder = "আপনার পূর্ণ নাম" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "a-err" })
+    </div>
+
+    <div class="a-field">
+        <label for="Mobile">মোবাইল নম্বর</label>
+        @Html.TextBoxFor(m => m.Mobile, new { @class = "a-input", type = "tel", inputmode = "tel", autocomplete = "tel", placeholder = "০১৭XXXXXXXX" })
+        @Html.ValidationMessageFor(m => m.Mobile, "", new { @class = "a-err" })
+    </div>
+
+    <div class="@memberCls" id="memberBox">
+        <label for="MemberNo">সদস্য নম্বর</label>
+        @Html.TextBoxFor(m => m.MemberNo, new { @class = "a-input", autocomplete = "off", placeholder = "যেমন: SWF-1001" })
+        <small class="a-hint">সদস্য তালিকায় থাকা নম্বর ও নিবন্ধিত মোবাইল নম্বর মিলতে হবে।</small>
+        @Html.ValidationMessageFor(m => m.MemberNo, "", new { @class = "a-err" })
+    </div>
+
+    <button type="submit" class="a-btn a-btn-primary" data-busy="অ্যাকাউন্ট খোলা হচ্ছে...">অ্যাকাউন্ট চালু করুন</button>
+}
+
+<p class="a-switch">
+    <a href="@Url.Action("Login", "Account")">← লগইন পেজে ফিরে যান</a>
+</p>

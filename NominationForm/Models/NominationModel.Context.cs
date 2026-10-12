@@ -28,6 +28,19 @@ namespace NominationForm.Models
         }
     
         public virtual DbSet<Nomination> Nominations { get; set; }
+        public virtual DbSet<Ballot> Ballots { get; set; }
+        public virtual DbSet<BallotVote> BallotVotes { get; set; }
+        public virtual DbSet<ElectionCandidate> ElectionCandidates { get; set; }
+        public virtual DbSet<ElectionPost> ElectionPosts { get; set; }
+        public virtual DbSet<Election> Elections { get; set; }
+        public virtual DbSet<VoterParticipation> VoterParticipations { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<ElectionGazette> ElectionGazettes { get; set; }
+        public virtual DbSet<ElectionResult> ElectionResults { get; set; }
+        public virtual DbSet<ElectionTieResolution> ElectionTieResolutions { get; set; }
+        public virtual DbSet<Member> Members { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<vw_UserFull> vw_UserFull { get; set; }
     
         public virtual ObjectResult<Nomination_GetAll_Result> Nomination_GetAll()
         {
@@ -166,6 +179,273 @@ namespace NominationForm.Models
                 new ObjectParameter("SupporterDate", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("Nomination_Insert", applicationNoParameter, applicationDateParameter, candidateNameParameter, memberNoParameter, organizationIdParameter, designationParameter, fatherOrHusbandNameParameter, motherNameParameter, dateOfBirthParameter, nIDParameter, presentAddressParameter, permanentAddressParameter, mobileParameter, emailParameter, desiredPostParameter, membershipDateParameter, isMembershipActiveParameter, isSavingsUpdatedParameter, isLoanUpdatedParameter, isEligibleParameter, candidateDeclarationAcceptedParameter, proposerNameParameter, proposerMemberNoParameter, proposerPostParameter, proposerMobileParameter, proposerDateParameter, supporterNameParameter, supporterMemberNoParameter, supporterMobileParameter, supporterDateParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> Election_Create(Nullable<int> electionYear, string title, string shortTitle, Nullable<int> copyPostsFromElection)
+        {
+            var electionYearParameter = electionYear.HasValue ?
+                new ObjectParameter("ElectionYear", electionYear) :
+                new ObjectParameter("ElectionYear", typeof(int));
+    
+            var titleParameter = title != null ?
+                new ObjectParameter("Title", title) :
+                new ObjectParameter("Title", typeof(string));
+    
+            var shortTitleParameter = shortTitle != null ?
+                new ObjectParameter("ShortTitle", shortTitle) :
+                new ObjectParameter("ShortTitle", typeof(string));
+    
+            var copyPostsFromElectionParameter = copyPostsFromElection.HasValue ?
+                new ObjectParameter("CopyPostsFromElection", copyPostsFromElection) :
+                new ObjectParameter("CopyPostsFromElection", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("Election_Create", electionYearParameter, titleParameter, shortTitleParameter, copyPostsFromElectionParameter);
+        }
+    
+        public virtual ObjectResult<Election_GetResults_Result> Election_GetResults(Nullable<int> electionId)
+        {
+            var electionIdParameter = electionId.HasValue ?
+                new ObjectParameter("ElectionId", electionId) :
+                new ObjectParameter("ElectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Election_GetResults_Result>("Election_GetResults", electionIdParameter);
+        }
+    
+        public virtual ObjectResult<Election_GetSummary_Result> Election_GetSummary(Nullable<int> electionId)
+        {
+            var electionIdParameter = electionId.HasValue ?
+                new ObjectParameter("ElectionId", electionId) :
+                new ObjectParameter("ElectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Election_GetSummary_Result>("Election_GetSummary", electionIdParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> Election_ImportApprovedCandidates(Nullable<int> electionId)
+        {
+            var electionIdParameter = electionId.HasValue ?
+                new ObjectParameter("ElectionId", electionId) :
+                new ObjectParameter("ElectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("Election_ImportApprovedCandidates", electionIdParameter);
+        }
+    
+        public virtual int Election_SyncCandidates(Nullable<int> electionId)
+        {
+            var electionIdParameter = electionId.HasValue ?
+                new ObjectParameter("ElectionId", electionId) :
+                new ObjectParameter("ElectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Election_SyncCandidates", electionIdParameter);
+        }
+    
+        public virtual int Election_SyncApproved(Nullable<int> electionId)
+        {
+            var electionIdParameter = electionId.HasValue ?
+                new ObjectParameter("ElectionId", electionId) :
+                new ObjectParameter("ElectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Election_SyncApproved", electionIdParameter);
+        }
+    
+        public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            var versionParameter = version.HasValue ?
+                new ObjectParameter("version", version) :
+                new ObjectParameter("version", typeof(int));
+    
+            var definitionParameter = definition != null ?
+                new ObjectParameter("definition", definition) :
+                new ObjectParameter("definition", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_alterdiagram", diagramnameParameter, owner_idParameter, versionParameter, definitionParameter);
+        }
+    
+        public virtual int sp_creatediagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            var versionParameter = version.HasValue ?
+                new ObjectParameter("version", version) :
+                new ObjectParameter("version", typeof(int));
+    
+            var definitionParameter = definition != null ?
+                new ObjectParameter("definition", definition) :
+                new ObjectParameter("definition", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_creatediagram", diagramnameParameter, owner_idParameter, versionParameter, definitionParameter);
+        }
+    
+        public virtual int sp_dropdiagram(string diagramname, Nullable<int> owner_id)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_dropdiagram", diagramnameParameter, owner_idParameter);
+        }
+    
+        public virtual ObjectResult<sp_helpdiagramdefinition_Result> sp_helpdiagramdefinition(string diagramname, Nullable<int> owner_id)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagramdefinition_Result>("sp_helpdiagramdefinition", diagramnameParameter, owner_idParameter);
+        }
+    
+        public virtual ObjectResult<sp_helpdiagrams_Result> sp_helpdiagrams(string diagramname, Nullable<int> owner_id)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_helpdiagrams_Result>("sp_helpdiagrams", diagramnameParameter, owner_idParameter);
+        }
+    
+        public virtual int sp_renamediagram(string diagramname, Nullable<int> owner_id, string new_diagramname)
+        {
+            var diagramnameParameter = diagramname != null ?
+                new ObjectParameter("diagramname", diagramname) :
+                new ObjectParameter("diagramname", typeof(string));
+    
+            var owner_idParameter = owner_id.HasValue ?
+                new ObjectParameter("owner_id", owner_id) :
+                new ObjectParameter("owner_id", typeof(int));
+    
+            var new_diagramnameParameter = new_diagramname != null ?
+                new ObjectParameter("new_diagramname", new_diagramname) :
+                new ObjectParameter("new_diagramname", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_renamediagram", diagramnameParameter, owner_idParameter, new_diagramnameParameter);
+        }
+    
+        public virtual int sp_upgraddiagrams()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
+        }
+    
+        public virtual ObjectResult<Auth_GetById_Result> Auth_GetById(Nullable<int> userId)
+        {
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auth_GetById_Result>("Auth_GetById", userIdParameter);
+        }
+    
+        public virtual ObjectResult<Auth_GetByLogin_Result> Auth_GetByLogin(string login)
+        {
+            var loginParameter = login != null ?
+                new ObjectParameter("Login", login) :
+                new ObjectParameter("Login", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auth_GetByLogin_Result>("Auth_GetByLogin", loginParameter);
+        }
+    
+        public virtual ObjectResult<Auth_GoogleLogin_Result> Auth_GoogleLogin(string googleSub, string email)
+        {
+            var googleSubParameter = googleSub != null ?
+                new ObjectParameter("GoogleSub", googleSub) :
+                new ObjectParameter("GoogleSub", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auth_GoogleLogin_Result>("Auth_GoogleLogin", googleSubParameter, emailParameter);
+        }
+    
+        public virtual int Auth_LoginResult(Nullable<int> userId, Nullable<bool> success)
+        {
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var successParameter = success.HasValue ?
+                new ObjectParameter("Success", success) :
+                new ObjectParameter("Success", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Auth_LoginResult", userIdParameter, successParameter);
+        }
+    
+        public virtual ObjectResult<Auth_Register_Result> Auth_Register(string fullName, string email, string mobile, byte[] passwordHash, byte[] passwordSalt, Nullable<int> pwdIterations, string googleSub, string accountType, string memberNo)
+        {
+            var fullNameParameter = fullName != null ?
+                new ObjectParameter("FullName", fullName) :
+                new ObjectParameter("FullName", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var mobileParameter = mobile != null ?
+                new ObjectParameter("Mobile", mobile) :
+                new ObjectParameter("Mobile", typeof(string));
+    
+            var passwordHashParameter = passwordHash != null ?
+                new ObjectParameter("PasswordHash", passwordHash) :
+                new ObjectParameter("PasswordHash", typeof(byte[]));
+    
+            var passwordSaltParameter = passwordSalt != null ?
+                new ObjectParameter("PasswordSalt", passwordSalt) :
+                new ObjectParameter("PasswordSalt", typeof(byte[]));
+    
+            var pwdIterationsParameter = pwdIterations.HasValue ?
+                new ObjectParameter("PwdIterations", pwdIterations) :
+                new ObjectParameter("PwdIterations", typeof(int));
+    
+            var googleSubParameter = googleSub != null ?
+                new ObjectParameter("GoogleSub", googleSub) :
+                new ObjectParameter("GoogleSub", typeof(string));
+    
+            var accountTypeParameter = accountType != null ?
+                new ObjectParameter("AccountType", accountType) :
+                new ObjectParameter("AccountType", typeof(string));
+    
+            var memberNoParameter = memberNo != null ?
+                new ObjectParameter("MemberNo", memberNo) :
+                new ObjectParameter("MemberNo", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auth_Register_Result>("Auth_Register", fullNameParameter, emailParameter, mobileParameter, passwordHashParameter, passwordSaltParameter, pwdIterationsParameter, googleSubParameter, accountTypeParameter, memberNoParameter);
+        }
+    
+        public virtual ObjectResult<Auth_UpgradeToMember_Result> Auth_UpgradeToMember(Nullable<int> userId, string memberNo)
+        {
+            var userIdParameter = userId.HasValue ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(int));
+    
+            var memberNoParameter = memberNo != null ?
+                new ObjectParameter("MemberNo", memberNo) :
+                new ObjectParameter("MemberNo", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Auth_UpgradeToMember_Result>("Auth_UpgradeToMember", userIdParameter, memberNoParameter);
         }
     }
 }

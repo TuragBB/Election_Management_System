@@ -81,6 +81,7 @@
                     <th class="col-serial sortable" data-sort="serial">ক্রমিক <i class="sort-ic"></i></th>
                     <th class="col-date sortable" data-sort="date">আবেদন ও তারিখ <i class="sort-ic"></i></th>
                     <th class="col-cand sortable" data-sort="name">প্রার্থী <i class="sort-ic"></i></th>
+                    <th class="col-contact">যোগাযোগ</th>
                     <th class="col-post sortable" data-sort="post">প্রার্থিতার পদ <i class="sort-ic"></i></th>
                     <th class="col-status sortable" data-sort="status">স্ট্যাটাস <i class="sort-ic"></i></th>
                     <th class="col-action">অ্যাকশন</th>
@@ -109,5 +110,5 @@
             exportUrl: '@Url.Action("ExportCsv", "Admin")'
         };
     </script>
-    <script src="@Url.Content("~/Scripts/admin-nominations.js")"></script>
+    <script src="@(Url.Content("~/Scripts/admin-nominations.js") + "?v=" + System.IO.File.GetLastWriteTime(Server.MapPath("~/Scripts/admin-nominations.js")).Ticks)"></script>
 }

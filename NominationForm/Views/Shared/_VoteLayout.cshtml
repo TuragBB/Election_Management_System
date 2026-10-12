@@ -1,0 +1,58 @@
+﻿@{
+    string headerTag = Convert.ToString(ViewBag.HeaderTag);
+    if (string.IsNullOrEmpty(headerTag)) { headerTag = "ত্রিবার্ষিক নির্বাচন"; }
+    bool hideFooter = ViewBag.HideFooter is bool && (bool)ViewBag.HideFooter;
+    string ctrl = Convert.ToString(ViewContext.RouteData.Values["controller"]);
+
+    // ফাইল বদলালেই URL বদলায়, তাই ব্রাউজার পুরোনো cache ব্যবহার করে না
+    string cssUrl = Url.Content("~/Content/vote.css") + "?v=" +
+System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/vote.css")).Ticks;
+    string jsUrl = Url.Content("~/Scripts/vote.js") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Scripts/vote.js")).Ticks;
+}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Staff Welfare Fund</title>
+    <link href="@cssUrl" rel="stylesheet" />
+    @RenderSection("styles", required: false)
+    <link href="@Url.Content("~/Content/account.css")" rel="stylesheet" />
+</head>
+<body class="vote-body">
+    <header class="v-header">
+        <div class="v-header-inner">
+            <a class="v-brand" href="@Url.Action("Index", "Vote")">
+                <span class="v-brand-mark">SWF</span>
+                <span class="v-brand-text">
+                    <strong>Staff Welfare Fund</strong>
+                    <small>অনলাইন মনোনয়ন ও ভোটিং পোর্টাল</small>
+                </span>
+            </a>
+
+            <nav class="v-nav" aria-label="প্রধান মেনু">
+                <a href="@Url.Action("Index", "Nomination")" class="@(ctrl == "Nomination" ? "active" : "")">মনোনয়ন ফরম</a>
+                <a href="@Url.Action("Index", "Vote")" class="@(ctrl == "Vote" ? "active" : "")">অনলাইন ভোটিং</a>
+            </nav>
+
+            @Html.Partial("_AuthBox")
+
+            <span class="v-header-tag"><i class="v-dot"></i>@headerTag</span>
+        </div>
+    </header>
+
+    @RenderBody()
+
+    @if (!hideFooter)
+    {
+        <footer class="v-footer">
+            © ২০২৬–২০২৭ Staff Welfare Fund | নির্বাচন পরিচালনা পরিষদ কর্তৃক সর্বস্বত্ব সংরক্ষিত।
+        </footer>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="@jsUrl"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

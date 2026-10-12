@@ -1,109 +1,459 @@
 ﻿@{
     string active = Convert.ToString(ViewBag.Active);
     string pageTitle = Convert.ToString(ViewBag.PageTitle);
+    string brandSub = Convert.ToString(ViewBag.BrandSub);
+
+    // Fallback values
+    if (string.IsNullOrWhiteSpace(pageTitle))
+    {
+        pageTitle = "এডমিন প্যানেল";
+    }
+
+    // Active menu fallback based on current controller/action.
+    // ViewBag.Active থাকলে সেটাই priority পাবে।
+    if (string.IsNullOrWhiteSpace(active))
+    {
+        string currentAction = ViewContext.RouteData.Values["action"] == null
+            ? ""
+            : ViewContext.RouteData.Values["action"].ToString();
+
+        if (string.Equals(currentAction, "Dashboard", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase))
+        {
+            active = "dashboard";
+        }
+        else if (string.Equals(currentAction, "Nominations", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "NominationList", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "Details", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "Print", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "PrintSummary", StringComparison.OrdinalIgnoreCase))
+        {
+            active = "nominations";
+        }
+        else if (string.Equals(currentAction, "Results", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "ResultsData", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "ResultsCsv", StringComparison.OrdinalIgnoreCase))
+        {
+            active = "results";
+        }
+        else if (string.Equals(currentAction, "ElectionSettings", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "ElectionSettingsSave", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(currentAction, "ElectionSetStatus", StringComparison.OrdinalIgnoreCase))
+        {
+            active = "settings";
+        }
+    }
+
+    // File change hole URL change hoy,
+    // tai browser purono CSS cache kore rakhe na.
+    string adminCss = Url.Content("~/Content/admin.css") + "?v=" +
+        System.IO.File.GetLastWriteTime(
+            Server.MapPath("~/Content/admin.css")
+        ).Ticks;
 }
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@pageTitle - Staff Welfare Fund</title>
-    <link href="@Url.Content("~/Content/admin.css")" rel="stylesheet" />
+
+    <link href="@adminCss" rel="stylesheet" />
+
     @RenderSection("styles", required: false)
 </head>
-<body>
+
+<body class="@ViewBag.BodyClass">
+
     <div class="admin-shell">
 
-        <!-- ================= Sidebar ================= -->
+        <!-- =========================================================
+             SIDEBAR
+        ========================================================== -->
         <aside class="sidebar" id="sidebar">
+
+            <!-- Brand -->
             <div class="sb-brand">
+
                 <span class="sb-logo">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 10l9-6 9 6" />
-                        <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8" />
-                        <path d="M3 21h18" />
-                    </svg>
+
+                    @if (!string.IsNullOrWhiteSpace(brandSub))
+                    {
+                        <!-- Election settings / special section icon -->
+                        <svg viewBox="0 0 24 24"
+                             width="20"
+                             height="20"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <rect x="3" y="13" width="18" height="8" rx="2" />
+                            <path d="M8 13V8l4-4 4 4v5" />
+                            <path d="M10 17h4" />
+                        </svg>
+                    }
+                    else
+                    {
+                        <!-- Default building icon -->
+                        <svg viewBox="0 0 24 24"
+                             width="20"
+                             height="20"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <path d="M3 10l9-6 9 6" />
+                            <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8" />
+                            <path d="M3 21h18" />
+                        </svg>
+                    }
+
                 </span>
-                <span class="sb-brand-text">Staff Welfare Fund</span>
+
+                <span class="sb-brand-wrap">
+
+                    <span class="sb-brand-text">
+                        Staff Welfare Fund
+                    </span>
+
+                    @if (!string.IsNullOrWhiteSpace(brandSub))
+                    {
+                        <small class="sb-brand-sub">
+                            @brandSub
+                        </small>
+                    }
+
+                </span>
+
             </div>
 
+
+            <!-- =====================================================
+                 NAVIGATION
+            ====================================================== -->
             <nav class="sb-nav">
-                <a class="sb-link @(active == "dashboard" ? "active" : "")" href="@Url.Action("Dashboard", "Admin")">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Dashboard -->
+                <a class="sb-link @(active == "dashboard" ? "active" : "")"
+                   href="@Url.Action("Dashboard", "Admin")">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
                         <rect x="3" y="3" width="7" height="7" rx="1" />
                         <rect x="14" y="3" width="7" height="7" rx="1" />
                         <rect x="3" y="14" width="7" height="7" rx="1" />
                         <rect x="14" y="14" width="7" height="7" rx="1" />
+
                     </svg>
+
                     <span>ড্যাশবোর্ড</span>
+
                 </a>
 
-                <a class="sb-link @(active == "nominations" ? "active" : "")" href="@Url.Action("Nominations", "Admin")">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Nominations -->
+                <a class="sb-link @(active == "nominations" ? "active" : "")"
+                   href="@Url.Action("Nominations", "Admin")">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
                         <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
                         <path d="M14 3v5h5" />
                         <path d="M9 13h6M9 17h6" />
+
                     </svg>
+
                     <span>সকল মনোনয়ন আবেদন</span>
+
                 </a>
+
+
+                <!-- Results -->
+                <a class="sb-link @(active == "results" ? "active" : "")"
+                   href="@Url.Action("Results", "Admin")">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M4 20V10M10 20V4M16 20v-8" />
+                        <path d="M2 20h20" />
+
+                    </svg>
+
+                    <span>নির্বাচনী ফলাফল</span>
+
+                    <em class="sb-live">
+                        লাইভ
+                    </em>
+
+                </a>
+
+
+                <!-- Election Settings -->
+                <a class="sb-link @(active == "settings" ? "active" : "")"
+                   href="@Url.Action("ElectionSettings", "Admin")">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M4 8h9" />
+                        <path d="M17 8h3" />
+                        <path d="M4 16h3" />
+                        <path d="M11 16h9" />
+
+                        <circle cx="15" cy="8" r="2" />
+                        <circle cx="9" cy="16" r="2" />
+
+                    </svg>
+
+                    <span>নির্বাচন সেটিংস</span>
+
+                </a>
+
             </nav>
 
+
+            <!-- =====================================================
+                 ADMIN USER
+            ====================================================== -->
             <div class="sb-user">
+
                 <span class="sb-avatar">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
                         <path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" />
+
                     </svg>
+
                 </span>
+
                 <span class="sb-user-text">
-                    <strong>এডমিন প্যানেল</strong>
-                    <small>Super Admin</small>
+
+                    <strong>
+                        এডমিন প্যানেল
+                    </strong>
+
+                    <small>
+                        Super Admin
+                    </small>
+
                 </span>
-                <a class="sb-logout" href="#" title="লগআউট" onclick="return false;">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Logout -->
+                <a class="sb-logout"
+                   href="#"
+                   title="লগআউট"
+                   onclick="return false;">
+
+                    <svg viewBox="0 0 24 24"
+                         width="18"
+                         height="18"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                         <path d="M16 17l5-5-5-5" />
                         <path d="M21 12H9" />
+
                     </svg>
+
                 </a>
+
             </div>
+
         </aside>
-        <div class="sb-backdrop" id="sbBackdrop"></div>
 
-        <!-- ================= Main ================= -->
-        <div class="main">
-            <header class="topbar">
-                <button type="button" class="menu-toggle" id="menuToggle" aria-label="মেনু">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <h2 class="topbar-title">@pageTitle</h2>
-                <span class="topbar-user" title="Super Admin">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
-                </span>
-            </header>
 
-            <div class="content @ViewBag.AdminContentClass">
-                @RenderBody()
-            </div>
+        <!-- Mobile backdrop -->
+        <div class="sb-backdrop"
+             id="sbBackdrop">
         </div>
+
+
+        <!-- =========================================================
+             MAIN CONTENT
+        ========================================================== -->
+        <div class="main">
+
+            @if (IsSectionDefined("topbar"))
+            {
+                @RenderSection("topbar", required: false)
+            }
+            else
+            {
+                <header class="topbar">
+
+                    <!-- Mobile menu -->
+                    <button type="button"
+                            class="menu-toggle"
+                            id="menuToggle"
+                            aria-label="মেনু"
+                            aria-expanded="false">
+
+                        <svg viewBox="0 0 24 24"
+                             width="22"
+                             height="22"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2"
+                             stroke-linecap="round">
+
+                            <path d="M4 6h16" />
+                            <path d="M4 12h16" />
+                            <path d="M4 18h16" />
+
+                        </svg>
+
+                    </button>
+
+
+                    <!-- Page title -->
+                    <h2 class="topbar-title">
+                        @pageTitle
+                    </h2>
+
+
+                    <!-- Admin user icon -->
+                    <span class="topbar-user"
+                          title="Super Admin">
+
+                        <svg viewBox="0 0 24 24"
+                             width="18"
+                             height="18"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+
+                            <circle cx="12"
+                                    cy="7"
+                                    r="4" />
+
+                        </svg>
+
+                    </span>
+
+                </header>
+            }
+
+
+            <!-- Page body -->
+            <div class="content @ViewBag.AdminContentClass">
+
+                @RenderBody()
+
+            </div>
+
+        </div>
+
     </div>
 
+
+    <!-- =============================================================
+         SWEET ALERT
+    ============================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>(function () {
+
+
+    <!-- =============================================================
+         SIDEBAR SCRIPT
+    ============================================================= -->
+    <script>
+        (function () {
+
             var sb = document.getElementById('sidebar');
             var bd = document.getElementById('sbBackdrop');
             var btn = document.getElementById('menuToggle');
+
+            if (!sb || !bd || !btn) {
+                return;
+            }
+
             function toggle(open) {
+
                 sb.classList.toggle('open', open);
                 bd.classList.toggle('show', open);
+
+                btn.setAttribute(
+                    'aria-expanded',
+                    open ? 'true' : 'false'
+                );
             }
-            btn.addEventListener('click', function () { toggle(!sb.classList.contains('open')); });
-            bd.addEventListener('click', function () { toggle(false); });
-        })();</script>
+
+            btn.addEventListener('click', function () {
+
+                var isOpen = sb.classList.contains('open');
+
+                toggle(!isOpen);
+
+            });
+
+            bd.addEventListener('click', function () {
+
+                toggle(false);
+
+            });
+
+            // ESC চাপলে mobile sidebar বন্ধ হবে
+            document.addEventListener('keydown', function (e) {
+
+                if (e.key === 'Escape') {
+                    toggle(false);
+                }
+
+            });
+
+        })();
+    </script>
+
+
     @RenderSection("scripts", required: false)
+
 </body>
 </html>

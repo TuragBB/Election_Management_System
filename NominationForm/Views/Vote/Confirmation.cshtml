@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "ভোট সফল";
+    Layout = "~/Views/Shared/_VoteLayout.cshtml";
+
+    string receipt = Convert.ToString(ViewBag.ReceiptNo);
+    DateTime at = ViewBag.SubmittedAt is DateTime ? (DateTime)ViewBag.SubmittedAt : DateTime.Now;
+    var voter = ViewBag.Voter as VoterInfo;
+
+    string serial = voter != null ? voter.Serial : "";
+    string ampm = at.Hour < 12 ? "AM" : "PM";
+    int h12 = at.Hour % 12; if (h12 == 0) { h12 = 12; }
+
+    string dateText = Bn.DateText(at) + " | " + Bn.Digits(h12.ToString("00")) + ":" + Bn.Digits(at.Minute.ToString("00")) + " " + ampm;
+}
+
+<main class="v-container v-done-wrap">
+    <div class="v-done" id="doneCard">
+        <canvas id="confetti" class="v-confetti" aria-hidden="true"></canvas>
+
+        <div class="v-done-icon">
+            <span class="ring r1"></span><span class="ring r2"></span>
+            <span class="core">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            </span>
+        </div>
+
+        <span class="v-done-pill"><i class="v-dot green"></i>ভোটিং প্রক্রিয়া সম্পন্ন হয়েছে</span>
+        <h1>আপনার ভোট সফলভাবে গ্রহণ করা হয়েছে!</h1>
+        <p class="v-done-lead">
+            স্টাফ ওয়েলফেয়ার ফান্ড ত্রিবার্ষিক সাধারণ নির্বাচন–এ আপনার মূল্যবান ভোটাধিকার প্রয়োগ সফলতার সাথে সম্পন্ন হয়েছে।
+            আপনার প্রদত্ত ব্যালট গোপনীয়ভাবে ডিজিটাল রেকর্ডে সংরক্ষণ করা হলো।
+        </p>
+
+        <div class="v-receipt">
+            <div class="v-receipt-top">
+                <div>
+                    <div class="v-receipt-label">@VoteIcons.Get("ballot", 13)<span>ডিজিটাল ব্যালট রশিদ নম্বর</span></div>
+                    <div class="v-receipt-code" id="receiptCode">@receipt</div>
+                </div>
+                <button type="button" class="v-btn v-btn-white" id="btnCopy">@VoteIcons.Get("copy", 15)<span>রশিদ কপি করুন</span></button>
+            </div>
+            <div class="v-receipt-note">ভবিষ্যতের রেফারেন্সের জন্য এই রশিদ নম্বরটি সংরক্ষণ করুন।</div>
+        </div>
+
+        <div class="v-tiles">
+            <div class="v-tile">
+                <div class="v-tile-label">@VoteIcons.Get("user", 13)<span>ভোটার আইডি</span></div>
+                <div class="v-tile-value">SWF-@serial</div>
+            </div>
+            <div class="v-tile">
+                <div class="v-tile-label">@VoteIcons.Get("clock", 13)<span>তারিখ ও সময়</span></div>
+                <div class="v-tile-value">@dateText</div>
+            </div>
+            <div class="v-tile">
+                <div class="v-tile-label">@VoteIcons.Get("shield", 13)<span>ব্যালট স্ট্যাটাস</span></div>
+                <div class="v-tile-value"><span class="ok">@VoteIcons.Get("shield", 14)গোপন ও সুরক্ষিত</span></div>
+            </div>
+        </div>
+
+        <div class="v-privacy">
+            @VoteIcons.Get("shield", 18)
+            <p><b>গোপনীয়তা ও নিরাপত্তা সূত্র:</b> নির্বাচন পরিচালনা বিধিমালা অনুযায়ী আপনার ভোট সম্পূর্ণ গোপন থাকবে। কোন ভোটার কাকে ভোট দিয়েছেন তা কোনোভাবেই সংরক্ষিত বা প্রকাশ করা হয় না। এই রশিদ নম্বরটি শুধুমাত্র ভোট প্রদানের প্রমাণ হিসেবে ব্যবহৃত হবে।</p>
+        </div>
+
+        <div class="v-done-actions">
+            <button type="button" class="v-btn v-btn-primary" id="btnPrint">@VoteIcons.Get("download", 16)<span>অফিশিয়াল স্লিপ ডাউনলোড ও প্রিন্ট</span></button>
+            <a class="v-btn v-btn-outline" href="@Url.Action("Index", "Vote")">@VoteIcons.Get("home", 16)<span>মূল পোর্টালে ফিরে যান</span></a>
+        </div>
+
+        <div class="v-done-foot">নির্বাচন পরিচালনা পরিষদ • ত্রিবার্ষিক নির্বাচন | ভোটার সাহায্য ডেস্ক: helpdesk@@swf-election.org</div>
+    </div>
+</main>

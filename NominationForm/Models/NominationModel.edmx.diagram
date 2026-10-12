@@ -4,8 +4,37 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="760d14821b2148b0992a4deacbe022b9" Name="Diagram1">
-        <EntityTypeShape EntityType="NominationDBModel1.Nomination" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+      <Diagram DiagramId="760d14821b2148b0992a4deacbe022b9" Name="Diagram1" ZoomLevel="82">
+        <EntityTypeShape EntityType="NominationDBModel1.Nomination" Width="1.5" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="NominationDBModel1.Ballot" Width="1.5" PointX="10.625" PointY="5" />
+        <EntityTypeShape EntityType="NominationDBModel1.BallotVote" Width="1.5" PointX="8.625" PointY="2.25" />
+        <EntityTypeShape EntityType="NominationDBModel1.ElectionCandidate" Width="1.5" PointX="5.75" PointY="3.625" />
+        <EntityTypeShape EntityType="NominationDBModel1.ElectionPost" Width="1.5" PointX="7.875" PointY="6.25" />
+        <EntityTypeShape EntityType="NominationDBModel1.Election" Width="1.5" PointX="3.125" PointY="3.625" />
+        <EntityTypeShape EntityType="NominationDBModel1.VoterParticipation" Width="1.5" PointX="3.375" PointY="0.5" />
+        <AssociationConnector Association="NominationDBModel1.FK_Ballots_Election" />
+        <AssociationConnector Association="NominationDBModel1.FK_BallotVotes_Ballot" />
+        <AssociationConnector Association="NominationDBModel1.FK_BallotVotes_Candidate" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionCandidates_Election" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionCandidates_Nomination" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionCandidates_Post" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionPosts_Election" />
+        <AssociationConnector Association="NominationDBModel1.FK_VoterParticipation_Election" />
+        <EntityTypeShape EntityType="NominationDBModel1.sysdiagram" Width="1.5" PointX="5.875" PointY="0.5" />
+        <EntityTypeShape EntityType="NominationDBModel1.ElectionGazette" Width="1.5" PointX="5.375" PointY="8.125" />
+        <EntityTypeShape EntityType="NominationDBModel1.ElectionResult" Width="1.5" PointX="13.125" PointY="4.75" />
+        <EntityTypeShape EntityType="NominationDBModel1.ElectionTieResolution" Width="1.5" PointX="10.125" PointY="8" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionResults_Candidate" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionTieResolutions_Candidate" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionGazette_Election" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionResults_Post" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionTieResolutions_Post" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionResults_Election" />
+        <AssociationConnector Association="NominationDBModel1.FK_ElectionTieResolutions_Election" />
+        <EntityTypeShape EntityType="NominationDBModel1.Member" Width="1.5" PointX="0.75" PointY="12.125" />
+        <EntityTypeShape EntityType="NominationDBModel1.User" Width="1.5" PointX="3" PointY="11" />
+        <EntityTypeShape EntityType="NominationDBModel1.vw_UserFull" Width="1.5" PointX="5.75" PointY="10.75" />
+        <AssociationConnector Association="NominationDBModel1.FK_Users_Members" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

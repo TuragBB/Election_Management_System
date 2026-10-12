@@ -14,6 +14,12 @@ namespace NominationForm.Models
     
     public partial class Nomination
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Nomination()
+        {
+            this.ElectionCandidates = new HashSet<ElectionCandidate>();
+        }
+    
         public int NominationId { get; set; }
         public string ApplicationNo { get; set; }
         public System.DateTime ApplicationDate { get; set; }
@@ -49,5 +55,12 @@ namespace NominationForm.Models
         public string Status { get; set; }
         public Nullable<System.DateTime> StatusUpdatedAt { get; set; }
         public string StatusUpdatedBy { get; set; }
+        public string PhotoFileName { get; set; }
+        public string PhotoContentType { get; set; }
+        public byte[] Photo { get; set; }
+        public Nullable<int> ElectionId { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ElectionCandidate> ElectionCandidates { get; set; }
     }
 }

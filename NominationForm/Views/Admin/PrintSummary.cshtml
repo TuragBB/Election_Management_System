@@ -12,12 +12,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>মনোনয়ন আবেদন সামারি</title>
-    <link href="@Url.Content("~/Content/admin-print.css")" rel="stylesheet" />
-    <style>
-        .paper.wide {
-            max-width: 1120px;
-        }
-    </style>
+    <link href="@(Url.Content("~/Content/admin-print.css") + "?v=" + System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/admin-print.css")).Ticks)" rel="stylesheet" />
 </head>
 <body class="summary-body">
     <div class="print-toolbar no-print">
@@ -40,12 +35,9 @@
         <table class="grid">
             <thead>
                 <tr>
-                    <th style="width:42px">ক্রমিক</th>
+                    <th>ক্রমিক</th>
                     <th>আবেদন নং ও তারিখ</th>
                     <th>প্রার্থী</th>
-                    <th>সদস্য নং</th>
-                    <th>সংস্থার তথ্য</th>
-                    <th>যোগাযোগ</th>
                     <th>প্রার্থিতার পদ</th>
                     <th>স্ট্যাটাস</th>
                 </tr>
@@ -57,23 +49,27 @@
                     <tr>
                         <td>@Bn.Digits(n)</td>
                         <td>@x.ApplicationNo<br />@Bn.DateText(x.ApplicationDate)</td>
-                        <td><strong>@x.CandidateName</strong></td>
-                        <td>@x.MemberNo</td>
-                        <td>@x.Designation<br />আইডি: @x.OrganizationId</td>
-                        <td>@x.Mobile<br />@x.Email</td>
+                        <td>
+                            <strong>@x.CandidateName</strong><br />
+                            সদস্য নং: @x.MemberNo<br />
+                            @x.Designation<br />
+                            মোবাইল: @x.Mobile
+                        </td>
                         <td>@x.DesiredPost</td>
                         <td>@NominationStatus.Text(x.Status)</td>
                     </tr>
                 }
                 @if (Model.Items.Count == 0)
                 {
-                    <tr><td colspan="8" style="text-align:center;padding:20px">কোনো আবেদন পাওয়া যায়নি।</td></tr>
+                    <tr><td colspan="5" style="text-align:center;padding:20px">কোনো আবেদন পাওয়া যায়নি।</td></tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <script>document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
-        document.getElementById('btnClose').addEventListener('click', function () { window.close(); });</script>
+    <script>
+        document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+        document.getElementById('btnClose').addEventListener('click', function () { window.close(); });
+    </script>
 </body>
 </html>

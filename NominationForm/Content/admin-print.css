@@ -25,7 +25,7 @@
 
 @page {
     size: A4 portrait;
-    margin: 9mm 10mm;
+    margin: 6mm 8mm;
 }
 
 * {
@@ -41,14 +41,14 @@ body {
     background: #e9eeec;
     color: #111;
     font-family: 'NikoshBAN', 'NotoSansBengali', 'Nirmala UI', 'Segoe UI', sans-serif;
-    font-size: 9.5pt;
-    line-height: 1.28;
+    font-size: 8.2pt;
+    line-height: 1.18;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
     body.summary-body {
-        font-size: 9pt;
+        font-size: 8pt;
     }
 
 .print-toolbar {
@@ -95,8 +95,8 @@ body {
 .paper {
     width: 210mm;
     max-width: 100%;
-    margin: 12px auto;
-    padding: 7mm 8mm;
+    margin: 8px auto;
+    padding: 4mm 5mm;
     background: #fff;
     box-shadow: 0 2px 14px rgba(0,0,0,.12);
 }
@@ -109,18 +109,18 @@ body.pdf-mode .paper {
 .form-header {
     text-align: center;
     border-bottom: 3px double #173f46;
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 5px;
 }
 
 .fh-org {
-    font-size: 10.5pt;
+    font-size: 8.8pt;
     font-weight: bold;
 }
 
 .form-header h1 {
     margin: 1px 0;
-    font-size: 15pt;
+    font-size: 13pt;
     line-height: 1.2;
 }
 
@@ -141,15 +141,15 @@ body.pdf-mode .paper {
 }
 
 .section {
-    margin: 8px 0;
-    page-break-inside: auto;
+    margin: 4px 0;
+    page-break-inside: avoid;
     break-inside: auto;
 }
 
     .section h2 {
         margin: 0 0 3px;
-        font-size: 10.5pt;
-        line-height: 1.2;
+        font-size: 8pt;
+        line-height: 1.15;
         border-bottom: 1px solid #777;
         padding-bottom: 2px;
         page-break-after: avoid;
@@ -169,10 +169,10 @@ table.kv {
     table.kv th,
     table.kv td {
         border: 1px solid #b9c3c0;
-        padding: 2.2px 5px;
+        padding: 1.4px 4px;
         vertical-align: top;
         text-align: left;
-        line-height: 1.25;
+        line-height: 1.12;
         overflow-wrap: anywhere;
         word-break: break-word;
     }
@@ -207,25 +207,25 @@ table.kv {
     }
 
 ol.declaration {
-    margin: 3px 0 4px 17px;
+    margin: 2px 0 3px 15px;
     padding: 0;
 }
 
     ol.declaration li {
-        margin: 1.5px 0;
+        margin: .6px 0;
         padding-left: 2px;
-        line-height: 1.25;
+        line-height: 1.12;
     }
 
 .accepted {
-    margin-top: 3px;
+    margin-top: 2px;
 }
 
 .sign-row {
     display: flex;
     justify-content: space-between;
     gap: 25px;
-    margin-top: 20px;
+    margin-top: 7px;
     text-align: center;
     page-break-inside: avoid;
     break-inside: avoid;
@@ -233,8 +233,8 @@ ol.declaration {
 
 .sign-box {
     width: 46%;
-    font-size: 9pt;
-    line-height: 1.25;
+    font-size: 8pt;
+    line-height: 1.12;
 }
 
 .sign-line {
@@ -269,6 +269,128 @@ table.grid {
         break-inside: avoid;
     }
 
+
+/* Compact one-page nomination print layout */
+.personal-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+    .personal-two-col table {
+        min-width: 0;
+    }
+
+.compact-table th,
+.compact-table td {
+    padding: 1.5px 4px !important;
+}
+
+.membership-print th {
+    width: auto !important;
+}
+
+.membership-print td {
+    width: auto !important;
+}
+
+.signature-row-large {
+    margin-top: 6px;
+    gap: 12px;
+}
+
+    .signature-row-large .sign-box {
+        width: 48%;
+    }
+
+    .signature-row-large .sign-space {
+        height: 12mm;
+        border-bottom: 1px solid transparent;
+    }
+
+.certification-signatures {
+    margin-top: 6px;
+}
+
+.declaration-print-section,
+.certification-print-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+@media print {
+    .personal-two-col,
+    .declaration-print-section,
+    .certification-print-section,
+    .signature-row-large {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+}
+
+/* Summary table: keep the existing green/gold visual language while using the available width efficiently */
+.summary-body .paper.wide {
+    max-width: 1120px;
+    padding: 5mm 6mm;
+}
+
+.summary-body table.grid {
+    table-layout: fixed;
+}
+
+    .summary-body table.grid th,
+    .summary-body table.grid td {
+        padding: 6px 9px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        .summary-body table.grid th:nth-child(1) {
+            width: 5%;
+        }
+
+        .summary-body table.grid th:nth-child(2) {
+            width: 15%;
+        }
+
+        .summary-body table.grid th:nth-child(3) {
+            width: 30%;
+        }
+
+        .summary-body table.grid th:nth-child(4) {
+            width: 13%;
+        }
+
+        .summary-body table.grid th:nth-child(5) {
+            width: 16%;
+        }
+
+        .summary-body table.grid th:nth-child(6) {
+            width: 10%;
+        }
+
+        .summary-body table.grid th:nth-child(7) {
+            width: 11%;
+        }
+
+@media print {
+    .summary-body {
+        font-size: 8pt !important;
+    }
+
+        .summary-body .paper.wide {
+            padding: 0 !important;
+        }
+
+        .summary-body table.grid {
+            font-size: 7.7pt !important;
+        }
+}
+
 @media screen {
     body.pdf-mode {
         background: #fff;
@@ -290,7 +412,7 @@ table.grid {
     }
 
     body {
-        font-size: 9.5pt !important;
+        font-size: 8.2pt !important;
         color: #111 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -310,8 +432,8 @@ table.grid {
     }
 
     .section {
-        page-break-inside: auto;
-        break-inside: auto;
+        page-break-inside: avoid;
+        break-inside: avoid;
     }
 
         .section h2 {
@@ -325,5 +447,230 @@ table.grid {
     table.grid thead th {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+}
+
+/* Summary table: 5 balanced columns (total 100%) */
+.summary-body table.grid th:nth-child(1) {
+    width: 7%;
+}
+
+.summary-body table.grid th:nth-child(2) {
+    width: 22%;
+}
+
+.summary-body table.grid th:nth-child(3) {
+    width: 31%;
+}
+
+.summary-body table.grid th:nth-child(4) {
+    width: 22%;
+}
+
+.summary-body table.grid th:nth-child(5) {
+    width: 18%;
+}
+
+/* ================================================================
+   ONE-PAGE A4 FORM  (single applicant : view > print / PDF)
+   Content stretches to fill the whole page, the extra height goes
+   into the signature spaces so nothing is left empty at the bottom.
+   ================================================================ */
+
+.paper.one-page {
+    display: flex;
+    flex-direction: column;
+    width: 210mm;
+    height: 295mm;
+    padding: 6mm 8mm;
+    font-size: 9pt;
+    line-height: 1.25;
+}
+
+/* ---- header + passport photo (right side) ---- */
+.one-page .form-header {
+    padding-bottom: 2mm;
+    margin-bottom: 2.2mm;
+}
+
+    .one-page .form-header.has-photo {
+        display: grid;
+        grid-template-columns: 26mm 1fr 26mm;
+        align-items: center;
+        column-gap: 3mm;
+    }
+
+.one-page .fh-org {
+    font-size: 11pt;
+}
+
+.one-page .form-header h1 {
+    margin: 1mm 0;
+    font-size: 14pt;
+}
+
+.one-page .form-header h3 {
+    margin: .4mm 0;
+    font-size: 11pt;
+}
+
+.one-page .fh-meta {
+    margin-top: 1.2mm;
+    font-size: 9.5pt;
+}
+
+.fh-photo {
+    position: relative;
+    width: 26mm;
+    height: 33mm;
+    border: 1px solid #173f46;
+    background: #fff;
+    overflow: hidden;
+}
+
+    .fh-photo img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+        background: #fff;
+    }
+
+.fh-photo-ph {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    text-align: center;
+    font-size: 7.5pt;
+    line-height: 1.3;
+    color: #6b7b77;
+}
+
+/* ---- sections ---- */
+.one-page .section {
+    margin: 0 0 2mm;
+}
+
+    .one-page .section h2 {
+        margin: 0 0 1.2mm;
+        padding-bottom: .8mm;
+        font-size: 10pt;
+        line-height: 1.2;
+    }
+
+.one-page table.kv th,
+.one-page table.kv td {
+    padding: .8mm 1.8mm;
+    line-height: 1.22;
+}
+
+.one-page .compact-table th,
+.one-page .compact-table td {
+    padding: .8mm 1.8mm !important;
+}
+
+/* two tables side by side keep the same height */
+.one-page .personal-two-col {
+    gap: 2.5mm;
+    align-items: stretch;
+}
+
+    .one-page .personal-two-col table.kv {
+        height: 100%;
+    }
+
+.one-page .two-col {
+    gap: 2.5mm;
+    align-items: stretch;
+}
+
+    .one-page .two-col table.kv {
+        height: 100%;
+    }
+
+/* গ. membership : ONE table, label | value */
+.one-page .membership-print th {
+    width: 36% !important;
+}
+
+.one-page .membership-print td {
+    width: 64% !important;
+}
+
+/* declaration */
+.one-page ol.declaration {
+    margin: .6mm 0 1mm 5mm;
+}
+
+    .one-page ol.declaration li {
+        margin: .3mm 0;
+        line-height: 1.22;
+    }
+
+.one-page .accepted {
+    margin-top: 1mm;
+}
+
+/* ---- the last two sections share the remaining height ---- */
+.one-page .declaration-print-section,
+.one-page .certification-print-section {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+.one-page .certification-print-section {
+    margin-top: 3mm;
+}
+
+.one-page .sign-row {
+    flex: 1 1 auto;
+    align-items: stretch;
+    margin-top: 1.4mm;
+    gap: 12mm;
+}
+
+.one-page .sign-box {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    font-size: 9pt;
+    line-height: 1.3;
+}
+
+.one-page .sign-space {
+    flex: 1 1 auto;
+    min-height: 11mm;
+    height: auto;
+}
+
+/* print : A4 page margin is 6mm 8mm  ->  usable 285mm height */
+@media print {
+    .paper.one-page {
+        width: auto;
+        height: 283mm;
+        padding: 0 !important;
+    }
+}
+
+/* PDF download (html2pdf margin 6/8/6/8 mm  ->  194mm x 285mm) */
+@media screen {
+    body.pdf-mode .paper.one-page {
+        width: 194mm;
+        max-width: 194mm;
+        height: 282mm;
+        margin: 0;
+        padding: 0;
     }
 }

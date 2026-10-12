@@ -1477,7 +1477,11 @@ th.sorted-asc .sort-ic, th.sorted-desc .sort-ic {
     }
 
     .nom-table .col-cand {
-        width: 35%;
+        width: 27%;
+    }
+
+    .nom-table .col-contact {
+        width: 10%;
     }
 
     .nom-table .col-post {
@@ -1485,11 +1489,11 @@ th.sorted-asc .sort-ic, th.sorted-desc .sort-ic {
     }
 
     .nom-table .col-status {
-        width: 13%;
+        width: 12%;
     }
 
     .nom-table .col-action {
-        width: 12%;
+        width: 11%;
     }
 
 /* Keep candidate content readable */
@@ -1873,3 +1877,135 @@ th.sorted-asc .sort-ic, th.sorted-desc .sort-ic {
     }
 }
 
+
+.nom-table .col-contact {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: left;
+}
+
+.cand-org {
+    margin-top: 4px;
+}
+
+.btn-print-detail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid #c9d6d2;
+    border-radius: 8px;
+    background: #fff;
+    color: #17302b;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .btn-print-detail:hover {
+        background: #f3f8f6;
+        border-color: #9eb8b1;
+    }
+
+/* ================================================================
+   CANDIDATE PHOTO - right side of SWF heading (admin details page)
+   ================================================================ */
+
+.detail-content .fc-head {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 120px;
+    column-gap: 16px;
+    align-items: center;
+    text-align: center;
+}
+
+    .detail-content .fc-head > h2,
+    .detail-content .fc-head > .detail-selected-post,
+    .detail-content .fc-head > p {
+        grid-column: 2;
+    }
+
+    .detail-content .fc-head > .detail-selected-post {
+        justify-self: center;
+    }
+
+.detail-content .fc-photo {
+    grid-column: 3;
+    grid-row: 1 / span 3;
+    justify-self: end;
+    position: relative;
+    width: 105px;
+    height: 135px;
+    border: 1px solid #9eb8b1;
+    border-radius: 4px;
+    background: #f6faf8;
+    overflow: hidden;
+}
+
+    .detail-content .fc-photo img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+        background: #ffffff;
+    }
+
+.detail-content .fc-photo-ph {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* Mobile: photo goes above the title, centered */
+@media (max-width: 700px) {
+    .detail-content .fc-head {
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+    }
+
+        .detail-content .fc-head > h2,
+        .detail-content .fc-head > .detail-selected-post,
+        .detail-content .fc-head > p {
+            grid-column: 1;
+        }
+
+    .detail-content .fc-photo {
+        grid-column: 1;
+        grid-row: auto;
+        justify-self: center;
+        margin-bottom: 10px;
+    }
+}
+
+/* =====================================================================
+   Content/admin.css er EKDOM SHESHE ei css ta jog koro
+   (sidebar er "লাইভ" badge - ei css admin.css e na thakle sidebar e badge thik dekhabe na)
+   ===================================================================== */
+.sb-link .sb-live {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.6;
+    padding: 0 7px;
+    border-radius: 4px;
+    background: var(--gold);
+    color: #4a3500;
+}

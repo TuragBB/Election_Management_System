@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 using System.Web.Mvc;
 
 namespace NominationSystem.Models
@@ -63,6 +64,9 @@ namespace NominationSystem.Models
         [EmailAddress(ErrorMessage = "সঠিক ই-মেইল দিন।")]
         public string Email { get; set; }
 
+        [Display(Name = "প্রার্থীর ছবি")]
+        public HttpPostedFileBase Photo { get; set; }
+
         [Required(ErrorMessage = "নির্বাচনী পদ নির্বাচন করুন।")]
         public string DesiredPost { get; set; }
 
@@ -119,7 +123,6 @@ namespace NominationSystem.Models
         public DateTime? SupporterDate { get; set; }
     }
 
-    // Checkbox must be checked (server + client validation).
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class MustBeTrueAttribute : ValidationAttribute, IClientValidatable
     {
@@ -129,7 +132,8 @@ namespace NominationSystem.Models
         }
 
         public IEnumerable<ModelClientValidationRule> GetClientValidationRules(
-            ModelMetadata metadata, ControllerContext context)
+            ModelMetadata metadata,
+            ControllerContext context)
         {
             yield return new ModelClientValidationRule
             {

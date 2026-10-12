@@ -6,6 +6,8 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using NominationSystem.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace NominationSystem.Controllers
 {
@@ -29,9 +31,11 @@ namespace NominationSystem.Controllers
     }
 
     [NoCache]
-    public class AdminController : Controller
+    public partial class AdminController : Controller
     {
         private readonly AdminNominationRepository repo = new AdminNominationRepository();
+
+        private readonly ResultsRepository resultsRepo = new ResultsRepository();
 
         // /Admin  ->  dashboard
         public ActionResult Index()
@@ -110,6 +114,24 @@ namespace NominationSystem.Controllers
             var model = repo.GetDetail(id);
             if (model == null) return HttpNotFound();
             return View(model);
+        }
+
+        // ---------------------------------------------------------------- Applicant photo
+        [HttpGet]
+        public ActionResult Photo(int id)
+        {
+            byte[] data;
+            string contentType;
+
+            if (!repo.GetPhoto(id, out data, out contentType))
+            {
+                return HttpNotFound();
+            }
+
+            contentType = (contentType ?? "").Trim().ToLowerInvariant();
+            if (contentType != "image/png") contentType = "image/jpeg";
+
+            return File(data, contentType);
         }
 
         // ---------------------------------------------------------------- Approve / Reject
@@ -215,6 +237,184 @@ namespace NominationSystem.Controllers
 
             string fileName = "nominations-" + DateTime.Now.ToString("yyyyMMdd-HHmm", CultureInfo.InvariantCulture) + ".csv";
             return File(bytes, "text/csv", fileName);
+        }
+
+        [HttpGet]
+        public ActionResult Results(int? electionId)
+        {
+            ResultsViewModel model;
+
+            try
+            {
+                model = resultsRepo.Get(electionId);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                model = new ResultsViewModel();       // "kono election nai" card dekhabe
+            }
+
+            // page load hoyei prothom render (pore JS 5 sec por por refresh kore)
+            ViewBag.InitJson = ResultsToJson(model);
+            return View(model);
+        }
+
+        // JSON for live polling
+        [HttpGet]
+        public ActionResult ResultsData(int? electionId)
+        {
+            try
+            {
+                var model = resultsRepo.Get(electionId);
+                return Content(ResultsToJson(model), "application/json", Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                Response.StatusCode = 500;
+                return Json(new { success = false, message = "ফলাফল লোড করা যায়নি।" },
+                            JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // Result summary CSV download (Excel e Bangla thik thakbe - UTF-8 BOM)
+        [HttpGet]
+        public ActionResult ResultsCsv(int? electionId)
+        {
+            var m = resultsRepo.Get(electionId);
+            if (!m.HasElection) return HttpNotFound();
+
+            bool ended = m.Phase == VotePhase.Ended;
+
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Join(",", new[]
+            {
+                "পদ", "পদ (ইংরেজি)", "অবস্থান", "ব্যালট নং", "প্রার্থীর নাম", "সদস্য নং",
+                "প্রাপ্ত ভোট", "শতকরা হার", "ব্যবধান", "ফলাফল"
+            }.Select(Csv)));
+
+            foreach (var p in m.Posts)
+            {
+                foreach (var c in p.Candidates)
+                {
+                    string result;
+                    if (c.IsTie) result = "টাই";
+                    else if (c.IsWinner) result = ended ? (p.Seats > 1 ? "নির্বাচিত" : "বিজয়ী") : "এগিয়ে";
+                    else result = ended ? "অনির্বাচিত" : "পিছিয়ে";
+
+                    sb.AppendLine(string.Join(",", new[]
+                    {
+                        p.DisplayName,
+                        p.DisplayNameEn,
+                        Bn.Digits(c.Rank),
+                        Bn.Digits(c.BallotNo.ToString("00")),
+                        c.Name,
+                        c.MemberNo,
+                        c.Votes.ToString(),
+                        c.Percent.ToString("0.0", CultureInfo.InvariantCulture) + "%",
+                        c.Lead > 0 ? "+" + c.Lead : "",
+                        result
+                    }.Select(Csv)));
+                }
+            }
+
+            var bytes = new UTF8Encoding(true).GetPreamble()
+                .Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();
+
+            string fileName = "election-results-" + m.ElectionYear + "-" +
+                              DateTime.Now.ToString("yyyyMMdd-HHmm", CultureInfo.InvariantCulture) + ".csv";
+            return File(bytes, "text/csv", fileName);
+        }
+
+        [HttpGet]
+        public ActionResult TieResolve(int? electionId)
+        {
+            ResultsViewModel model;
+            var history = new System.Collections.Generic.List<TieHistoryRow>();
+
+            try
+            {
+                model = resultsRepo.Get(electionId);
+                if (model.HasElection)
+                {
+                    history = resultsRepo.GetTieHistory(model.ElectionId);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                model = new ResultsViewModel();
+            }
+
+            ViewBag.History = history;
+            return View(model);
+        }
+
+        // Winner select kore +1 vote jog (AJAX)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TieResolveSave(int electionId, int postId, int candidateId, string remarks)
+        {
+            try
+            {
+                // No login system yet, so a fixed name is stored.
+                var r = resultsRepo.ResolveTie(electionId, postId, candidateId, remarks, "Super Admin");
+                return Json(new { success = r.Success, message = r.Message });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                return Json(new { success = false, message = "টাই সমাধান করা যায়নি। আবার চেষ্টা করুন।" });
+            }
+        }
+
+        // চূড়ান্ত গেজেট অনুমোদন (AJAX)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ApproveGazette(int electionId)
+        {
+            try
+            {
+                var r = resultsRepo.ApproveGazette(electionId, "Super Admin");
+                return Json(new { success = r.Success, message = r.Message });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                return Json(new { success = false, message = "গেজেট অনুমোদন করা যায়নি। আবার চেষ্টা করুন।" });
+            }
+        }
+
+        // শুধু টেবিল আকারে ফলাফল প্রিন্ট পেজ (নতুন ট্যাবে খোলে)
+        [HttpGet]
+        public ActionResult ResultPrint(int? electionId)
+        {
+            ResultsViewModel model;
+
+            try
+            {
+                model = resultsRepo.Get(electionId);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                model = new ResultsViewModel();
+            }
+
+            return View(model);
+        }
+
+        // ---- helper : model -> camelCase JSON (</script> safe)
+        private static string ResultsToJson(ResultsViewModel model)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            return JsonConvert.SerializeObject(model, settings)
+                .Replace("<", "\\u003c")
+                .Replace(">", "\\u003e")
+                .Replace("&", "\\u0026");
         }
 
         // ================================================================ helpers

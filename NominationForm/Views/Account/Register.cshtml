@@ -1,0 +1,108 @@
+﻿@model NominationSystem.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "অ্যাকাউন্ট খুলুন";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
+    bool isMember = Model.AccountType == AccountTypes.Member;
+    string memberCls = isMember ? "a-field a-member" : "a-field a-member is-hidden";
+}
+
+<div class="acc-head">
+    <span class="acc-head-icon">@VoteIcons.Get("user", 22)</span>
+    <h1>নতুন অ্যাকাউন্ট খুলুন</h1>
+    <p>আপনার ধরন নির্বাচন করে তথ্য দিন। সদস্য অ্যাকাউন্টের জন্য সদস্য নম্বর যাচাই করা হবে।</p>
+</div>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm", @class = "acc-form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ReturnUrl)
+    @Html.ValidationSummary(true, "", new { @class = "a-alert" })
+
+    <div class="a-seg" role="radiogroup" aria-label="অ্যাকাউন্টের ধরন">
+        <label class="a-seg-opt">
+            @Html.RadioButtonFor(m => m.AccountType, AccountTypes.Voter, new { id = "type_voter" })
+            <span class="a-seg-body">
+                <b>সাধারণ ভোটার</b>
+                <small>শুধু ভোট দিতে পারবেন</small>
+            </span>
+        </label>
+        <label class="a-seg-opt">
+            @Html.RadioButtonFor(m => m.AccountType, AccountTypes.Member, new { id = "type_member" })
+            <span class="a-seg-body">
+                <b>সদস্য</b>
+                <small>মনোনয়ন ফরম + ভোট</small>
+            </span>
+        </label>
+    </div>
+
+    <div class="a-field">
+        <label for="FullName">পূর্ণ নাম</label>
+        @Html.TextBoxFor(m => m.FullName, new { @class = "a-input", autocomplete = "name", placeholder = "আপনার পূর্ণ নাম" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "a-err" })
+    </div>
+
+    <div class="a-grid2">
+        <div class="a-field">
+            <label for="Email">ই-মেইল</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "a-input", type = "email", autocomplete = "email", placeholder = "example@mail.com" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "a-err" })
+        </div>
+        <div class="a-field">
+            <label for="Mobile">মোবাইল নম্বর</label>
+            @Html.TextBoxFor(m => m.Mobile, new { @class = "a-input", type = "tel", inputmode = "tel", autocomplete = "tel", placeholder = "০১৭XXXXXXXX" })
+            @Html.ValidationMessageFor(m => m.Mobile, "", new { @class = "a-err" })
+        </div>
+    </div>
+
+    <div class="@memberCls" id="memberBox">
+        <label for="MemberNo">সদস্য নম্বর</label>
+        @Html.TextBoxFor(m => m.MemberNo, new { @class = "a-input", autocomplete = "off", placeholder = "যেমন: SWF-1001" })
+        <small class="a-hint">সদস্য তালিকায় থাকা নম্বর ও নিবন্ধিত মোবাইল নম্বর মিলতে হবে।</small>
+        @Html.ValidationMessageFor(m => m.MemberNo, "", new { @class = "a-err" })
+    </div>
+
+    <div class="a-grid2">
+        <div class="a-field">
+            <label for="Password">পাসওয়ার্ড</label>
+            <div class="a-pw">
+                @Html.PasswordFor(m => m.Password, new { @class = "a-input", autocomplete = "new-password", placeholder = "কমপক্ষে ৮ অক্ষর" })
+                <button type="button" class="a-pw-toggle" data-toggle-pw="Password" aria-label="পাসওয়ার্ড দেখান বা লুকান">দেখান</button>
+            </div>
+            <div class="a-meter" id="pwMeter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "a-err" })
+        </div>
+        <div class="a-field">
+            <label for="ConfirmPassword">পাসওয়ার্ড আবার লিখুন</label>
+            <div class="a-pw">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "a-input", autocomplete = "new-password", placeholder = "একই পাসওয়ার্ড" })
+                <button type="button" class="a-pw-toggle" data-toggle-pw="ConfirmPassword" aria-label="পাসওয়ার্ড দেখান বা লুকান">দেখান</button>
+            </div>
+            <small class="a-hint" id="pwMatch"></small>
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "a-err" })
+        </div>
+    </div>
+
+    <button type="submit" class="a-btn a-btn-primary" data-busy="অ্যাকাউন্ট খোলা হচ্ছে...">অ্যাকাউন্ট খুলুন</button>
+}
+
+@if (GoogleOAuth.IsConfigured)
+{
+    <div class="a-or"><span>অথবা</span></div>
+
+    <a class="a-btn a-btn-google" href="@Url.Action("GoogleLogin", "Account", new { returnUrl = Model.ReturnUrl })">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
+            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z" />
+            <path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z" />
+            <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
+        </svg>
+        <span>Google দিয়ে চালিয়ে যান</span>
+    </a>
+}
+
+<p class="a-switch">
+    আগেই অ্যাকাউন্ট আছে?
+    <a href="@Url.Action("Login", "Account", new { returnUrl = Model.ReturnUrl })">লগইন করুন</a>
+</p>

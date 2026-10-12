@@ -1079,3 +1079,395 @@ button, input, select, textarea {
         grid-template-columns: 1fr
     }
 }
+
+.photo-upload-field .photo-input {
+    padding: 5px 8px;
+    min-height: 37px;
+    background: #f8fbfa;
+}
+
+.photo-help {
+    display: block;
+    margin-top: 4px;
+    color: #788581;
+    font-size: 10.5px;
+    line-height: 1.4;
+}
+
+/* ================================================================
+   HEADER NAV + WIDTH/MARGIN = Voting page (exact same values)
+   ================================================================ */
+.site-header-inner {
+    width: 100% !important;
+    max-width: 2200px !important;
+    margin: 0 auto !important;
+    height: 57px !important;
+    min-height: 0 !important;
+    padding: 0 36px !important;
+}
+
+.nomination-container {
+    width: 100% !important;
+    max-width: 2200px !important;
+    margin: 0 auto !important;
+    padding: 32px 36px 38px !important;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid rgba(211,170,77,.4);
+    border-radius: 999px;
+    background: rgba(255,255,255,.04);
+}
+
+    .site-nav a {
+        padding: 6px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #cfe3de !important;
+        text-decoration: none !important;
+        white-space: nowrap;
+        border-radius: 999px;
+        transition: background .25s, color .25s;
+    }
+
+        .site-nav a:hover {
+            color: #fff !important;
+            background: rgba(255,255,255,.08);
+        }
+
+        .site-nav a.active {
+            color: #062f29 !important;
+            background: linear-gradient(135deg, #ecd391, #d3aa4d);
+        }
+
+@media (max-width: 760px) {
+    .header-tag {
+        display: none !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .site-header-inner {
+        padding: 0 14px !important;
+    }
+
+    .nomination-container {
+        padding: 20px 14px 25px !important;
+    }
+
+    .site-nav a {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .brand-text small {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    .brand-text {
+        display: none;
+    }
+}
+
+/* ================================================================
+   WIDE LAYOUT SCALE-UP: text, inputs, radios (balanced size)
+   ================================================================ */
+.nomination-heading {
+    padding: 40px 32px 36px;
+}
+
+    .nomination-heading .heading-badge {
+        font-size: 11px;
+        padding: 3px 14px;
+    }
+
+    .nomination-heading h1 {
+        font-size: clamp(28px, 2.4vw, 38px);
+    }
+
+    .nomination-heading h3 {
+        margin-top: 8px;
+        font-size: 18px;
+    }
+
+    .nomination-heading p {
+        margin-top: 12px;
+        padding: 4px 16px;
+        font-size: 13px;
+    }
+
+#nominationForm {
+    padding: 22px 48px 38px;
+}
+
+    #nominationForm .form-section {
+        padding: 24px 0 28px;
+    }
+
+        #nominationForm .form-section h2 {
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            font-size: 24px;
+        }
+
+    #nominationForm .sec-badge {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        font-size: 16px;
+    }
+
+    #nominationForm .form-section h3 {
+        font-size: 18px;
+    }
+
+    #nominationForm .form-grid {
+        column-gap: 24px;
+        row-gap: 6px;
+    }
+
+    #nominationForm .field {
+        margin-bottom: 12px;
+    }
+
+        #nominationForm .field label,
+        #nominationForm .question > label {
+            margin-bottom: 7px;
+            font-size: 16px;
+        }
+
+    #nominationForm .form-control {
+        min-height: 48px;
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 16px;
+    }
+
+    #nominationForm .textarea.form-control {
+        min-height: 84px;
+    }
+
+    #nominationForm .photo-upload-field .photo-input {
+        min-height: 48px;
+        padding: 8px 12px;
+    }
+
+    #nominationForm .photo-help {
+        font-size: 13px;
+    }
+
+    #nominationForm .field-validation-error {
+        font-size: 13px;
+    }
+
+    /* date fields */
+    #nominationForm .date-field {
+        min-height: 48px;
+    }
+
+        #nominationForm .date-field .form-control {
+            height: 48px;
+            min-height: 48px;
+            padding-right: 60px;
+        }
+
+            #nominationForm .date-field .form-control::-webkit-calendar-picker-indicator {
+                width: 40px;
+                height: 40px;
+                top: 4px;
+                right: 6px;
+            }
+
+    #nominationForm .date-picker-trigger {
+        top: 6px;
+        right: 8px;
+        width: 36px;
+        height: 36px;
+    }
+
+        #nominationForm .date-picker-trigger svg {
+            width: 19px;
+            height: 19px;
+        }
+
+    /* radio buttons / pills (পদ নির্বাচন) */
+    #nominationForm .radio-grid,
+    #nominationForm .radio-inline {
+        gap: 12px;
+    }
+
+    #nominationForm .radio-option,
+    #nominationForm .choice-pill {
+        min-height: 52px;
+        gap: 12px;
+        padding: 8px 18px;
+        border-radius: 10px;
+        font-size: 16px;
+    }
+
+        #nominationForm .radio-option input,
+        #nominationForm .choice-pill input {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+        }
+
+    /* সদস্যপদ (গ) */
+    #nominationForm .membership-date-field {
+        max-width: 440px;
+    }
+
+    #nominationForm .membership-question-row {
+        min-height: 56px;
+        gap: 24px;
+        padding: 12px 18px;
+    }
+
+    #nominationForm .membership-question-text {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    #nominationForm .yes-no-group {
+        gap: 22px;
+        min-width: 110px;
+    }
+
+        #nominationForm .yes-no-group label {
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        #nominationForm .yes-no-group input {
+            width: 20px;
+            height: 20px;
+        }
+
+    /* ঘোষণা (ঘ) */
+    #nominationForm .declaration-box {
+        padding: 20px 24px 18px;
+    }
+
+    #nominationForm .declaration-intro {
+        font-size: 16px;
+    }
+
+    #nominationForm .declaration-box .declaration-list {
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    #nominationForm .declaration-box .declaration-check {
+        gap: 12px;
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+
+        #nominationForm .declaration-box .declaration-check input {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+        }
+
+    /* প্রত্যয়নকারী কার্ড (ঙ) */
+    #nominationForm .certification-grid {
+        gap: 22px;
+    }
+
+    #nominationForm .person-card {
+        padding: 18px 20px 14px;
+        border-radius: 10px;
+    }
+
+        #nominationForm .person-card h3 {
+            padding: 5px 12px;
+            font-size: 16px;
+        }
+
+        #nominationForm .person-card p {
+            font-size: 13.5px;
+        }
+
+        #nominationForm .person-card .field label {
+            font-size: 15px;
+        }
+
+        #nominationForm .person-card .form-control {
+            min-height: 44px;
+            height: 44px;
+            padding: 6px 12px;
+            font-size: 15px;
+        }
+
+        #nominationForm .person-card .date-field .form-control {
+            height: 44px;
+            min-height: 44px;
+            padding-right: 56px;
+        }
+
+        #nominationForm .person-card .date-picker-trigger {
+            top: 4px;
+            right: 6px;
+            width: 36px;
+            height: 36px;
+        }
+
+            #nominationForm .person-card .date-picker-trigger svg {
+                width: 18px;
+                height: 18px;
+            }
+
+/* submit (nomination) */
+.submit-area {
+    padding-top: 28px;
+}
+
+.btn-primary-custom {
+    min-width: 280px;
+    min-height: 54px;
+    padding: 10px 32px;
+    border-radius: 11px;
+    font-size: 18px;
+}
+
+@media (max-width: 760px) {
+    .nomination-heading {
+        padding: 30px 16px 26px;
+    }
+
+    #nominationForm {
+        padding: 14px 16px 28px;
+    }
+
+        #nominationForm .form-section h2 {
+            font-size: 20px;
+        }
+
+        #nominationForm .form-control,
+        #nominationForm .radio-option,
+        #nominationForm .choice-pill {
+            font-size: 15px;
+        }
+
+        #nominationForm .field label {
+            font-size: 15px;
+        }
+
+        #nominationForm .membership-question-text,
+        #nominationForm .yes-no-group label {
+            font-size: 15px;
+        }
+
+    .btn-primary-custom {
+        width: 100%;
+        min-width: 0;
+    }
+}

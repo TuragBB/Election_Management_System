@@ -156,6 +156,32 @@ namespace NominationSystem.Models
             }
         }
 
+        /// <summary>Applicant photo bytes (kept out of GetDetail so the blob is loaded only when the image is requested).</summary>
+        public bool GetPhoto(int id, out byte[] data, out string contentType)
+        {
+            data = null;
+            contentType = null;
+
+            const string sql =
+                "SELECT Photo, PhotoContentType FROM dbo.Nominations WHERE NominationId = @id";
+
+            using (var con = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, con))
+            {
+                cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                con.Open();
+
+                using (var r = cmd.ExecuteReader())
+                {
+                    if (!r.Read() || r.IsDBNull(0)) return false;
+
+                    data = (byte[])r["Photo"];
+                    contentType = r.IsDBNull(1) ? "image/jpeg" : Convert.ToString(r["PhotoContentType"]);
+                    return data != null && data.Length > 0;
+                }
+            }
+        }
+
         /// <summary>Returns true if a row was updated.</summary>
         public bool UpdateStatus(int id, string status, string updatedBy)
         {
@@ -172,7 +198,36 @@ namespace NominationSystem.Models
                 cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
 
                 con.Open();
-                return cmd.ExecuteNonQuery() > 0;
+                bool updated = cmd.ExecuteNonQuery() > 0;
+
+                if (updated) SyncCandidates(con, id);
+
+                return updated;
+            }
+        }
+
+        /// <summary>
+        /// Approve / Reject hole sathe sathe oi mononoyoner election er candidate list
+        /// (ElectionCandidates) database e update hoy. Fail korleo approve/reject atkabe na,
+        /// karon ballot kholar somoy-o ekbar sync hoy.
+        /// </summary>
+        private static void SyncCandidates(SqlConnection con, int nominationId)
+        {
+            try
+            {
+                const string sql =
+                    "DECLARE @e INT = (SELECT ElectionId FROM dbo.Nominations WHERE NominationId = @id); " +
+                    "IF @e IS NOT NULL EXEC dbo.Election_SyncApproved @ElectionId = @e;";
+
+                using (var cmd = new SqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = nominationId;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
             }
         }
 

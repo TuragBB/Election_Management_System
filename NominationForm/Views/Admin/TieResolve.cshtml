@@ -1,0 +1,485 @@
+﻿@model NominationSystem.Models.ResultsViewModel
+@using NominationSystem.Models
+@{
+    ViewBag.Title = "টাই সমাধান";
+    ViewBag.PageTitle = "টাই সমাধান";
+    ViewBag.Active = "results";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var history = (System.Collections.Generic.List<TieHistoryRow>)ViewBag.History
+                  ?? new System.Collections.Generic.List<TieHistoryRow>();
+
+    bool ended = Model.HasElection && Model.Phase == VotePhase.Ended;
+    var tiePosts = Model.Posts.Where(p => p.IsTie).ToList();
+    string backUrl = Url.Action("Results", "Admin");
+}
+
+@section styles {
+    <style>
+        .tr-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .tr-head {
+            background: #fff;
+            border: 1px solid #e3ebe8;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+            .tr-head h1 {
+                margin: 0 0 4px;
+                font-size: 20px;
+                color: #0c3d33;
+            }
+
+            .tr-head p {
+                margin: 0;
+                font-size: 13px;
+                color: #5a6f69;
+            }
+
+        .tr-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #d3dfdb;
+            background: #fff;
+            color: #17302b;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+            .tr-btn:hover {
+                background: #f3f8f6;
+            }
+
+            .tr-btn.primary {
+                background: #0c3d33;
+                border-color: #0c3d33;
+                color: #fff;
+            }
+
+                .tr-btn.primary:hover {
+                    background: #0a3129;
+                }
+
+            .tr-btn[disabled] {
+                opacity: .45;
+                cursor: not-allowed;
+            }
+
+        .tr-note {
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            background: #eef6f2;
+            border: 1px solid #cfe6da;
+            color: #0a5c3a;
+        }
+
+            .tr-note.warn {
+                background: #fff8ee;
+                border-color: #f6c590;
+                color: #8a4300;
+            }
+
+        .tr-card {
+            background: #fff;
+            border: 1px solid #f6c590;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+
+            .tr-card h2 {
+                margin: 0 0 4px;
+                font-size: 17px;
+                color: #0c3d33;
+            }
+
+        .tr-sub {
+            margin: 0 0 12px;
+            font-size: 12.5px;
+            color: #7a5a35;
+        }
+
+        .tr-list {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tr-opt {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border: 1px solid #e3ebe8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fcfdfc;
+        }
+
+            .tr-opt:hover {
+                border-color: #d8b25a;
+                background: #fffdf5;
+            }
+
+            .tr-opt.is-picked {
+                border-color: #0a7a4b;
+                background: #e7f4ed;
+            }
+
+            .tr-opt input {
+                width: 18px;
+                height: 18px;
+                accent-color: #0c3d33;
+                flex: 0 0 auto;
+            }
+
+            .tr-opt .nm {
+                font-weight: 700;
+                color: #17302b;
+            }
+
+            .tr-opt .mt {
+                font-size: 12px;
+                color: #5a6f69;
+            }
+
+            .tr-opt .vt {
+                margin-left: auto;
+                text-align: right;
+                font-weight: 800;
+                color: #8a4300;
+                white-space: nowrap;
+            }
+
+                .tr-opt .vt small {
+                    display: block;
+                    font-weight: 600;
+                    color: #7a5a35;
+                }
+
+            .tr-opt .tr-info {
+                display: block;
+                min-width: 0;
+            }
+
+            .tr-opt .nm, .tr-opt .mt {
+                display: block;
+            }
+
+        .tr-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+            .tr-row input[type=text] {
+                flex: 1 1 260px;
+                padding: 9px 12px;
+                border: 1px solid #d3dfdb;
+                border-radius: 8px;
+                font-size: 13px;
+                font-family: inherit;
+            }
+
+        .tr-table-wrap {
+            background: #fff;
+            border: 1px solid #e3ebe8;
+            border-radius: 14px;
+            padding: 14px 16px;
+            overflow-x: auto;
+        }
+
+            .tr-table-wrap h3 {
+                margin: 0 0 10px;
+                font-size: 15px;
+                color: #0c3d33;
+            }
+
+        table.tr-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .tr-table th, .tr-table td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid #e3ebe8;
+            vertical-align: top;
+        }
+
+        .tr-table th {
+            background: #f3f8f6;
+            color: #0c3d33;
+            white-space: nowrap;
+        }
+    </style>
+}
+
+<div class="tr-wrap">
+
+    <div class="tr-head">
+        <div>
+            <h1>টাই সমাধান</h1>
+            <p>
+                @if (Model.HasElection)
+                {
+                    <text>@Model.Title (@Bn.Digits(Model.ElectionYear)) — যে পদগুলোতে সমান ভোট হয়েছে, সেখানে একজনকে বিজয়ী নির্ধারণ করুন। বিজয়ী প্রার্থীর ভোট ১ বৃদ্ধি পাবে।</text>
+                }
+                else
+                {
+                    <text>কোনো নির্বাচন পাওয়া যায়নি।</text>
+                }
+            </p>
+        </div>
+        <a class="tr-btn" href="@backUrl">← ফলাফল পাতায় ফিরে যান</a>
+    </div>
+
+    @if (!Model.HasElection)
+    {
+        <div class="tr-note warn">ডাটাবেসে কোনো নির্বাচন (Election) তৈরি করা নেই।</div>
+    }
+    else if (!ended)
+    {
+        <div class="tr-note warn">ভোটগ্রহণ এখনো শেষ হয়নি। ভোটগ্রহণ শেষ হওয়ার পর টাই সমাধান করা যাবে।</div>
+    }
+    else if (Model.GazetteApproved)
+    {
+        <div class="tr-note">চূড়ান্ত গেজেট অনুমোদন হয়ে গেছে (@Model.GazetteApprovedText)। এখন আর টাই সমাধান করা যাবে না।</div>
+    }
+    else if (tiePosts.Count == 0)
+    {
+        <div class="tr-note">কোনো পদে টাই নেই — সব টাই সমাধান হয়ে গেছে। এখন ফলাফল পাতা থেকে গেজেট অনুমোদন করতে পারেন।</div>
+    }
+    else
+    {
+        <div class="tr-note warn">মোট <b>@Bn.Digits(tiePosts.Count)টি</b> পদে টাই আছে। প্রতিটি পদে একজন প্রার্থী বেছে “বিজয়ী নির্ধারণ করুন” চাপুন।</div>
+
+        foreach (var p in tiePosts)
+        {
+            var tied = p.Candidates.Where(c => c.IsTie).ToList();
+            int tieVotes = tied.Count > 0 ? tied[0].Votes : 0;
+            int above = p.Candidates.Count(c => c.Votes > tieVotes);
+            int openSeats = Math.Max(1, p.Seats - above);
+
+            <div class="tr-card" data-post="@p.PostId">
+                <h2>@(p.DisplayName + (string.IsNullOrEmpty(p.DisplayNameEn) ? "" : " (" + p.DisplayNameEn + ")"))</h2>
+                <p class="tr-sub">
+                    টাই হওয়া প্রার্থী: @Bn.Digits(tied.Count) জন · প্রত্যেকের ভোট: @Bn.Digits(tieVotes) ·
+                    এই টাইয়ের মধ্যে খালি আসন: @Bn.Digits(openSeats)টি
+                </p>
+
+                <div class="tr-list">
+                    @foreach (var c in tied)
+                    {
+                        <label class="tr-opt">
+                            <input type="radio" name="pick-@p.PostId" value="@c.CandidateId" data-name="@c.Name" />
+                            <span class="tr-info">
+                                <span class="nm">@c.Name@if (!string.IsNullOrEmpty(c.Remarks))
+                                {<text> (@c.Remarks)</text>}</span>
+                                <span class="mt">ব্যালট @Bn.Digits(c.BallotNo.ToString("00")) | সদস্য নং: @(c.MemberNo + (string.IsNullOrEmpty(c.Designation) ? "" : " | " + c.Designation))</span>
+                            </span>
+                            <span class="vt">@Bn.Digits(c.Votes) ভোট<small>@Bn.Digits(c.Percent.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))%</small></span>
+                        </label>
+                    }
+                </div>
+
+                <div class="tr-row">
+                    <input type="text" class="tr-remarks" maxlength="300" placeholder="মন্তব্য (ঐচ্ছিক) — যেমন: লটারি / রিটার্নিং অফিসারের সিদ্ধান্ত" />
+                    <button type="button" class="tr-btn primary tr-resolve" disabled
+                            data-post="@p.PostId" data-title="@p.DisplayName">
+                        বিজয়ী নির্ধারণ করুন
+                    </button>
+                </div>
+            </div>
+        }
+    }
+
+    @if (history.Count > 0)
+    {
+        <div class="tr-table-wrap">
+            <h3>সমাধান করা টাইয়ের তালিকা (ডাটাবেসে সংরক্ষিত)</h3>
+            <table class="tr-table">
+                <thead>
+                    <tr>
+                        <th>পদ</th>
+                        <th>বিজয়ী প্রার্থী</th>
+                        <th>যুক্ত ভোট</th>
+                        <th>মন্তব্য</th>
+                        <th>সমাধানকারী</th>
+                        <th>সময়</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in history)
+                    {
+                        <tr>
+                            <td>@h.PostName</td>
+                            <td>@h.CandidateName (ব্যালট @Bn.Digits(h.BallotNo.ToString("00")))</td>
+                            <td>+@Bn.Digits(h.BonusVotes)</td>
+                            <td>@h.Remarks</td>
+                            <td>@h.ResolvedBy</td>
+                            <td>@h.ResolvedAtText</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div id="antiForgeryForm" style="display:none">@Html.AntiForgeryToken()</div>
+</div>
+
+@section scripts {
+    <script>
+        window.TIE_CFG = {
+            saveUrl: '@Url.Action("TieResolveSave", "Admin")',
+            backUrl: '@Url.Action("Results", "Admin")',
+            electionId: @Model.ElectionId
+        };
+    </script>
+    <script>(function () {
+            'use strict';
+
+            var cfg = window.TIE_CFG;
+            var busy = false;
+
+    function goBack() {
+        window.location.href = cfg.backUrl + (cfg.backUrl.indexOf('?') < 0 ? '?' : '&') +
+            'electionId=' + encodeURIComponent(cfg.electionId);
+    }
+
+            function token() {
+                var el = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+                return el ? el.value : '';
+            }
+
+            function selected(card) {
+                return card.querySelector('input[type=radio]:checked');
+            }
+
+            // radio bachle button chalu + highlight
+            document.addEventListener('change', function (e) {
+                var t = e.target;
+                if (!t || t.type !== 'radio') return;
+
+                var card = t.closest('.tr-card');
+                if (!card) return;
+
+                Array.prototype.forEach.call(card.querySelectorAll('.tr-opt'), function (o) {
+                    o.classList.toggle('is-picked', !!o.querySelector('input:checked'));
+                });
+
+                var btn = card.querySelector('.tr-resolve');
+                if (btn) btn.disabled = false;
+            });
+
+            function send(card, btn, pick) {
+                if (busy) return;
+                busy = true;
+                btn.disabled = true;
+
+                var remarksEl = card.querySelector('.tr-remarks');
+                var body = new URLSearchParams();
+                body.append('__RequestVerificationToken', token());
+                body.append('electionId', cfg.electionId);
+                body.append('postId', btn.getAttribute('data-post'));
+                body.append('candidateId', pick.value);
+                body.append('remarks', remarksEl ? remarksEl.value : '');
+
+                fetch(cfg.saveUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: body.toString()
+                })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(function (res) {
+                        busy = false;
+                        if (res && res.success) {
+                            if (window.Swal) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'টাই সমাধান হয়েছে',
+                                    text: res.message || '',
+                                    confirmButtonText: 'ফলাফল পাতায় যান',
+                                    confirmButtonColor: '#0c3d33',
+                                    returnFocus: false,
+                                    didClose: goBack
+                                });
+                            } else {
+                                goBack();
+                            }
+                        } else {
+                            btn.disabled = false;
+                            var msg = (res && res.message) || 'টাই সমাধান করা যায়নি।';
+                            if (window.Swal) {
+                                Swal.fire({ icon: 'error', title: 'সম্ভব হয়নি', text: msg, confirmButtonText: 'ঠিক আছে', confirmButtonColor: '#0c3d33', returnFocus: false });
+                            } else {
+                                alert(msg);
+                            }
+                        }
+                    })
+                    .catch(function () {
+                        busy = false;
+                        btn.disabled = false;
+                        alert('সংযোগ সমস্যা — আবার চেষ্টা করুন।');
+                    });
+            }
+
+            document.addEventListener('click', function (e) {
+                var btn = e.target.closest ? e.target.closest('.tr-resolve') : null;
+                if (!btn || btn.disabled) return;
+
+                var card = btn.closest('.tr-card');
+                var pick = card ? selected(card) : null;
+                if (!pick) return;
+
+                var name = pick.getAttribute('data-name') || '';
+                var title = btn.getAttribute('data-title') || '';
+
+                if (!window.Swal) {
+                    if (window.confirm(name + ' কে ' + title + ' পদে বিজয়ী ঘোষণা করবেন? তার ভোট ১ বৃদ্ধি পাবে।')) send(card, btn, pick);
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'question',
+                    title: 'বিজয়ী নিশ্চিত করুন',
+                    text: name + ' কে ' + title + ' পদে বিজয়ী ঘোষণা করা হবে এবং তার ভোট ১ বৃদ্ধি পাবে।',
+                    showCancelButton: true,
+                    confirmButtonText: 'হ্যাঁ, নিশ্চিত',
+                    cancelButtonText: 'বাতিল',
+                    confirmButtonColor: '#0c3d33',
+                    returnFocus: false
+                }).then(function (r) {
+                    if (r.isConfirmed) send(card, btn, pick);
+                });
+            });
+        })();</script>
+}

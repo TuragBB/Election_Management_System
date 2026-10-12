@@ -13,7 +13,19 @@
     var badge = document.getElementById('statusBadge');
     var badgeText = document.getElementById('statusBadgeText');
     var buttons = document.querySelectorAll('[data-decision]');
+    var printButton = document.getElementById('btnDetailPrint');
+    var printUrl = wrap.getAttribute('data-print-url');
     var CLASSES = ['st-pending', 'st-approved', 'st-rejected'];
+
+    if (printButton && printUrl) {
+        printButton.addEventListener('click', function () {
+            window.open(
+                printUrl + '/' + encodeURIComponent(id),
+                'nomPrint',
+                'width=1100,height=850,scrollbars=yes,resizable=yes'
+            );
+        });
+    }
 
     function token() {
         var el = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');

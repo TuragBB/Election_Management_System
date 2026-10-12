@@ -16,7 +16,7 @@
         <p>আবেদনপত্র নং: স্বয়ংক্রিয়ভাবে তৈরি হবে</p>
     </div>
 
-    @using (Html.BeginForm("Index", "Nomination", FormMethod.Post, new { id = "nominationForm", autocomplete = "off" }))
+    @using (Html.BeginForm("Index", "Nomination", FormMethod.Post, new { id = "nominationForm", autocomplete = "off", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(false, "", new { @class = "validation-summary" })
@@ -34,7 +34,7 @@
 
                 <div class="field">
                     <label for="MemberNo">সদস্য নং<span class="required-mark">*</span></label>
-                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", id = "MemberNo", placeholder = "সদস্য নম্বর" })
+                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", id = "MemberNo", placeholder = "সদস্য নম্বর", @readonly = "readonly" })
                     @Html.ValidationMessageFor(m => m.MemberNo)
                 </div>
 
@@ -101,6 +101,13 @@
                     <label for="Email">ই-মেইল (যদি থাকে)</label>
                     @Html.TextBoxFor(m => m.Email, new { @class = "form-control", id = "Email", type = "email", placeholder = "example@domain.com" })
                     @Html.ValidationMessageFor(m => m.Email)
+                </div>
+
+                <div class="field full-width photo-upload-field">
+                    <label for="Photo">প্রার্থীর ছবি</label>
+                    <input type="file" name="Photo" id="Photo" class="form-control photo-input" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+                    <small class="photo-help">সাম্প্রতিক পাসপোর্ট সাইজের ছবি দিন। JPG, JPEG বা PNG, সর্বোচ্চ ২ MB।</small>
+                    @Html.ValidationMessageFor(m => m.Photo)
                 </div>
             </div>
         </section>

@@ -1,0 +1,32 @@
+﻿@model NominationSystem.Models.MemberUpgradeViewModel
+
+@{
+    ViewBag.Title = "সদস্য যাচাই";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="acc-head">
+    <span class="acc-head-icon is-gold">@VoteIcons.Get("briefcase", 22)</span>
+    <h1>মনোনয়ন ফরম শুধু সদস্যদের জন্য</h1>
+    <p>আপনার অ্যাকাউন্টটি এখন “সাধারণ ভোটার”। মনোনয়ন ফরম পূরণ করতে সদস্য নম্বর যাচাই করুন। ভোট দেওয়ার জন্য এটি লাগবে না।</p>
+</div>
+
+@using (Html.BeginForm("MemberRequired", "Account", FormMethod.Post, new { id = "memberForm", @class = "acc-form", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ReturnUrl)
+    @Html.ValidationSummary(true, "", new { @class = "a-alert" })
+
+    <div class="a-field">
+        <label for="MemberNo">সদস্য নম্বর</label>
+        @Html.TextBoxFor(m => m.MemberNo, new { @class = "a-input", autocomplete = "off", placeholder = "যেমন: SWF-1001", autofocus = "autofocus" })
+        <small class="a-hint">সদস্য তালিকার নম্বরের সাথে আপনার অ্যাকাউন্টের মোবাইল নম্বর মিলতে হবে।</small>
+        @Html.ValidationMessageFor(m => m.MemberNo, "", new { @class = "a-err" })
+    </div>
+
+    <button type="submit" class="a-btn a-btn-primary" data-busy="যাচাই করা হচ্ছে...">সদস্য হিসেবে যাচাই করুন</button>
+}
+
+<p class="a-switch">
+    <a href="@Url.Action("Index", "Vote")">অনলাইন ভোটিং পেজে যান</a>
+</p>

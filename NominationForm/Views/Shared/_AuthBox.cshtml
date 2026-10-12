@@ -1,0 +1,28 @@
+﻿@* Header er dan dike: login na thakle "লগইন / অ্যাকাউন্ট খুলুন", thakle naam + "লগআউট" *@
+@{
+    var cu = NominationSystem.Models.AuthUser.Current;
+    string rawUrl = Request.RawUrl;
+}
+<div class="auth-box">
+    @if (cu == null)
+    {
+        <a class="auth-link" href="@Url.Action("Login", "Account", new { returnUrl = rawUrl })">লগইন</a>
+        <a class="auth-btn" href="@Url.Action("Register", "Account", new { returnUrl = rawUrl })">অ্যাকাউন্ট খুলুন</a>
+    }
+    else
+    {
+        string initial = string.IsNullOrWhiteSpace(cu.Name) ? "?" : cu.Name.Trim().Substring(0, 1);
+
+        <span class="auth-chip" title="@cu.Name">
+            <span class="auth-avatar">@initial</span>
+            <span class="auth-name">@cu.Name</span>
+            <em class="auth-role @(cu.IsMember ? "is-member" : "")">@(cu.IsMember ? "সদস্য" : "ভোটার")</em>
+        </span>
+
+        using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "auth-out" }))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="auth-btn ghost">লগআউট</button>
+        }
+    }
+</div>

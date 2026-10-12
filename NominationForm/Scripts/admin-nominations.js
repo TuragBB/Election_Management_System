@@ -148,16 +148,6 @@
             icon: ICONS.user
         };
 
-        var contact = [];
-
-        if (x.mobile) {
-            contact.push(esc(x.mobile));
-        }
-
-        if (x.email) {
-            contact.push(esc(x.email));
-        }
-
         return '' +
             '<tr>' +
 
@@ -193,10 +183,10 @@
             esc(x.organizationId) +
             '</div>' +
 
-            '<div class="cand-contact">' +
-            contact.join(' · ') +
-            '</div>' +
+            '</td>' +
 
+            '<td class="col-contact">' +
+            (x.mobile ? esc(x.mobile) : '—') +
             '</td>' +
 
             '<td class="col-post">' +

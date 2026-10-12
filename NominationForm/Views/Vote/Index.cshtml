@@ -1,0 +1,279 @@
+﻿@model NominationSystem.Models.BallotViewModel
+
+@{
+    ViewBag.Title = "অনলাইন ভোটিং পোর্টাল";
+    Layout = "~/Views/Shared/_VoteLayout.cshtml";
+    ViewBag.HideFooter = true;
+
+    if (Model.HasElection)
+    {
+        ViewBag.HeaderTag = Model.ShortTitle + "–" + Bn.Digits(Model.ElectionYear);
+    }
+
+    int total = Model.TotalVotes;
+    int postCount = Model.Posts.Count;
+    var voter = Model.Voter;
+}
+
+@helper Clock(string id, int seconds)
+{
+    <div class="v-clock" id="@id" data-seconds="@seconds">
+        <div class="v-tbox"><b data-u="d">০০</b><span>দিন</span></div>
+        <div class="v-tbox"><b data-u="h">০০</b><span>ঘণ্টা</span></div>
+        <div class="v-tbox"><b data-u="m">০০</b><span>মিনিট</span></div>
+        <div class="v-tbox"><b data-u="s">০০</b><span>সেকেন্ড</span></div>
+    </div>
+}
+
+@if (!Model.HasElection || Model.AlreadyVoted)
+{
+    <main class="v-container">
+        <div class="v-empty">
+            <div class="v-empty-icon">@VoteIcons.Get(Model.AlreadyVoted ? "check" : "ballot", 30)</div>
+            @if (Model.AlreadyVoted)
+            {
+                <h2>আপনি ইতিমধ্যে ভোট প্রদান করেছেন</h2>
+                <p>প্রতিটি ভোটার শুধুমাত্র একবার ভোট দিতে পারবেন। আপনার ভোট সফলভাবে গৃহীত হয়েছে।</p>
+            }
+            else
+            {
+                <h2>বর্তমানে কোনো নির্বাচন চালু নেই</h2>
+                <p>ভোটগ্রহণ শুরু হলে এই পেজে ব্যালট পেপার দেখা যাবে। অনুগ্রহ করে নির্বাচন কমিশনের ঘোষণা অনুসরণ করুন।</p>
+            }
+        </div>
+    </main>
+}
+else if (Model.Phase == VotePhase.NotStarted || Model.Phase == VotePhase.Ended)
+{
+    bool notStarted = Model.Phase == VotePhase.NotStarted;
+
+    <main class="v-container">
+        <div class="v-empty">
+            <div class="v-empty-icon">@VoteIcons.Get(notStarted ? "clock" : "alert", 30)</div>
+            @if (notStarted)
+            {
+                <h2>ভোটগ্রহণ এখনো শুরু হয়নি</h2>
+                <p>
+                    ভোটগ্রহণ শুরু হবে: <b>@Bn.DateTimeText(Model.StartAt.Value)</b>।
+                    সময় হলে এই পেজ নিজে থেকেই খুলে যাবে।
+                </p>
+                @Clock("startClock", Model.SecondsToStart)
+            }
+            else
+            {
+                <h2>ভোটগ্রহণের সময় শেষ হয়েছে</h2>
+                <p>
+                    ভোটগ্রহণ শেষ হয়েছে: <b>@Bn.DateTimeText(Model.EndAt.Value)</b>।
+                    এখন আর ভোট দেওয়া বা ব্যালট দেখা যাবে না।
+                </p>
+            }
+        </div>
+    </main>
+}
+else
+{
+<main class="v-container" id="voteApp" data-total="@total" data-posts="@postCount" data-election="@Model.ElectionId" data-submit-url="@Url.Action("Submit", "Vote")">
+
+    @if (Model.EndAt.HasValue)
+    {
+        <section class="v-timer">
+            <span class="v-timer-icon">@VoteIcons.Get("clock", 20)</span>
+            <div class="v-timer-text">
+                <strong>ভোটগ্রহণ শেষ হতে বাকি</strong>
+                <small>সমাপ্তির সময়: @Bn.DateTimeText(Model.EndAt.Value)</small>
+            </div>
+            @Clock("voteClock", Model.SecondsToEnd)
+        </section>
+    }
+
+    <!-- ================= HERO ================= -->
+    <section class="v-hero reveal">
+        <div class="v-hero-left">
+            <span class="v-hero-pill"><i class="v-dot gold"></i>Staff Welfare Fund • @Model.Title @Bn.Digits(Model.ElectionYear)</span>
+            <h1>অনলাইন গোপন ব্যালট পেপার (অফিসিয়াল ভোটিং পোর্টাল)</h1>
+            <p>
+                প্রতিটি পদের বিপরীতে নির্ধারিত সংখ্যক প্রার্থী নির্বাচন করুন। সম্পূর্ণ গোপনীয়তা বজায় রেখে
+                প্রতিটি ভোট একটি অনন্য রশিদ নম্বরের মাধ্যমে যাচাইযোগ্য ও সুরক্ষিতভাবে সংরক্ষণ করা হয়।
+            </p>
+        </div>
+
+        <aside class="v-progress">
+            <div class="v-progress-title">@VoteIcons.Get("chart", 15)<span>মোট ভোট অগ্রগতি</span></div>
+            <div class="v-progress-count"><b id="pgCount">০</b><span> / <span id="pgTotal">@Bn.Digits(total)</span> টি ভোট সম্পন্ন</span></div>
+            <div class="v-progress-track"><div class="v-progress-fill" id="pgFill"></div></div>
+            <div class="v-progress-meta">
+                <span><span id="pgLeft">@Bn.Digits(postCount)</span> টি পদ বাকি আছে</span>
+                <b id="pgPct">০%</b>
+            </div>
+        </aside>
+    </section>
+
+    <!-- ================= VOTER CARD ================= -->
+    <section class="v-voter reveal">
+        <span class="v-voter-icon">@VoteIcons.Get("shield", 20)</span>
+        <div class="v-voter-main">
+            <div class="v-voter-name">ভোটার: @voter.Name <span class="v-badge-green">যাচাইকৃত ভোটার</span></div>
+            <div class="v-voter-sub">
+                @voter.CodeLabel: @voter.MemberCode <i>•</i> ভোটার ক্রমিক: @voter.Serial <i>•</i> ভোটিং বুথ: @voter.Booth
+            </div>
+        </div>
+        <span class="v-session"><i class="v-dot green"></i>নিরাপদ ডিজিটাল সেশন সক্রিয়</span>
+    </section>
+
+    <!-- ================= BALLOT ================= -->
+    <form id="voteForm" class="v-ballot" action="@Url.Action("Submit", "Vote")" method="post" onsubmit="return false;" novalidate>
+        @Html.AntiForgeryToken()
+
+        @for (int i = 0; i < Model.Posts.Count; i++)
+        {
+            var post = Model.Posts[i];
+            bool multi = post.MaxVotes > 1;
+            string need = Bn.Digits(post.MaxVotes);
+
+            <section class="v-post reveal @(multi ? "is-multi" : "")" data-post-id="@post.PostId" data-max="@post.MaxVotes" data-name="@post.DisplayName">
+                <div class="v-post-head">
+                    <span class="v-post-no">@Bn.Digits(i + 1)</span>
+                    <div class="v-post-titles">
+                        <h2>
+                            @post.DisplayName (@post.DisplayNameEn)
+                            @if (multi)
+                            {
+                                <span class="v-chip">ঠিক @need জন প্রার্থীকে ভোট দিন (<span class="js-chip-count">০</span>/@need)</span>
+                            }
+                            else
+                            {
+                                <span class="v-chip">@need জন প্রার্থীকে ভোট দিন (একক নির্বাচন)</span>
+                            }
+                        </h2>
+                        <p>
+                            @if (multi)
+                            {
+                                <text>প্রার্থীদের কার্ডে ক্লিক করে ঠিক @need জনকে নির্বাচন করুন</text>
+                            }
+                            else
+                            {
+                                <text>প্রার্থীর কার্ডে ক্লিক করে আপনার সমর্থন নিশ্চিত করুন</text>
+                            }
+                        </p>
+                    </div>
+                    @if (multi)
+                    {
+                        <span class="v-post-state is-counter js-state">০ / @need</span>
+                    }
+                    else
+                    {
+                        <span class="v-post-state js-state">অনির্বাচিত</span>
+                    }
+                </div>
+
+                @if (multi)
+                {
+                    <div class="v-notice">
+                        @VoteIcons.Get("alert", 16)
+                        <span>এই পদে অবশ্যই @need জন প্রার্থীকে নির্বাচন করতে হবে। @need জনের কম বা বেশি নির্বাচন করলে ভোট গ্রহণযোগ্য হবে না।</span>
+                    </div>
+                }
+
+                <div class="v-grid @(multi ? "cols-4" : "cols-3")">
+                    @foreach (var c in post.Candidates)
+                    {
+                        <div class="v-cand" role="checkbox" aria-checked="false" tabindex="0" data-id="@c.CandidateId" data-name="@c.Name">
+                            <div class="v-cand-photo">
+                                @if (c.HasPhoto)
+                                {
+                                    <img src="@Url.Action("Photo", "Vote", new { id = c.CandidateId })" alt="@c.Name" loading="lazy" draggable="false" />
+                                }
+                                else
+                                {
+                                    <span class="v-cand-ph">@(string.IsNullOrEmpty(c.Name) ? "" : c.Name.Trim().Substring(0, 1))</span>
+                                }
+                                <span class="v-ballot-no">ব্যালট @Bn.Digits(c.BallotNo.ToString("00"))</span>
+                                <span class="v-tick">@VoteIcons.Get("check", 15)</span>
+                            </div>
+                            <div class="v-cand-body">
+                                <h3>@c.Name</h3>
+                                <p>@VoteIcons.Get("briefcase", 13)<span>@c.Designation</span></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+            </section>
+        }
+
+        <div class="v-final">
+            <button type="button" class="v-btn v-btn-ghost v-final-btn" id="btnReset">@VoteIcons.Get("reset", 20)<span>রিসেট</span></button>
+            <button type="button" class="v-btn v-btn-primary v-final-btn" id="btnSubmit">@VoteIcons.Get("lock", 20)<span>ভোট নিশ্চিত ও ডিজিটাল ব্যালট জমা দিন</span></button>
+        </div>
+        <p class="v-final-note">একবার ডিজিটাল ব্যালট সাবমিট করলে সংশোধন বা প্রত্যাহার করা যাবে না।</p>
+    </form>
+</main>
+}
+
+@section scripts {
+    <script>
+        (function () {
+            var BN = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            function bn(n) { return String(n).replace(/\d/g, function (d) { return BN[+d]; }); }
+            function pad(n) { return bn(n < 10 ? '0' + n : n); }
+
+            function countdown(box, onZero) {
+                if (!box) return;
+                var total = parseInt(box.getAttribute('data-seconds'), 10) || 0;
+                var t0 = Date.now();
+                var u = {
+                    d: box.querySelector('[data-u="d"]'),
+                    h: box.querySelector('[data-u="h"]'),
+                    m: box.querySelector('[data-u="m"]'),
+                    s: box.querySelector('[data-u="s"]')
+                };
+                var fired = false;
+
+                function tick() {
+                    var left = total - Math.floor((Date.now() - t0) / 1000);
+                    if (left < 0) left = 0;
+
+                    u.d.textContent = pad(Math.floor(left / 86400));
+                    u.h.textContent = pad(Math.floor(left % 86400 / 3600));
+                    u.m.textContent = pad(Math.floor(left % 3600 / 60));
+                    u.s.textContent = pad(left % 60);
+                    box.classList.toggle('is-warn', left > 0 && left <= 300);   // last 5 min = lal
+
+                    if (left <= 0) {
+                        if (!fired) { fired = true; onZero(); }
+                        return;
+                    }
+                    window.setTimeout(tick, 250);
+                }
+                tick();
+            }
+
+            // ভোটগ্রহণ শুরুর আগের পেজ: সময় হলে নিজে reload
+            countdown(document.getElementById('startClock'), function () {
+                window.setTimeout(function () { window.location.reload(); }, 1000);
+            });
+
+            // ভোটগ্রহণ চলছে: সময় শেষ হলে ব্যালট বন্ধ
+            countdown(document.getElementById('voteClock'), function () {
+                window.__voteClosed = true;   // "leave page" warning বন্ধ
+                var app = document.getElementById('voteApp');
+                if (app) app.classList.add('is-locked');
+
+                if (window.Swal) {
+                    window.Swal.fire({
+                        icon: 'info',
+                        title: 'ভোটগ্রহণের সময় শেষ',
+                        text: 'নির্ধারিত সময় শেষ হয়ে গেছে। এখন আর ভোট দেওয়া যাবে না।',
+                        confirmButtonText: 'ঠিক আছে',
+                        confirmButtonColor: '#063a32',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    }).then(function () { window.location.reload(); });
+                } else {
+                    window.location.reload();
+                }
+            });
+        })();
+    </script>
+}

@@ -12,6 +12,7 @@ namespace NominationForm
     {
         protected void Application_Start()
         {
+            System.Web.Helpers.AntiForgeryConfig.SuppressIdentityHeuristicChecks = true;
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

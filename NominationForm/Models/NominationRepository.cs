@@ -59,7 +59,73 @@ namespace NominationSystem.Models
                 Add(cmd, "@SupporterDate", m.SupporterDate, 0);
 
                 con.Open();
-                return Convert.ToInt32(cmd.ExecuteScalar());
+                int newId = Convert.ToInt32(cmd.ExecuteScalar());
+
+                SavePhoto(con, newId, m.Photo);
+                StampElection(con, newId);
+
+                return newId;
+            }
+        }
+
+        // Notun mononoyon ta sobcheye notun toiri kora election er sathe jure dey.
+        // Kono karone fail korleo mononoyon jama deya atkabe na.
+        private static void StampElection(SqlConnection con, int id)
+        {
+            try
+            {
+                const string sql =
+                    "UPDATE dbo.Nominations " +
+                    "SET ElectionId = (SELECT TOP 1 ElectionId FROM dbo.Elections ORDER BY ElectionId DESC) " +
+                    "WHERE NominationId = @Id AND ElectionId IS NULL";
+
+                using (var cmd = new SqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+            }
+        }
+
+        // Saves the uploaded photo (the stored procedure has no photo parameter).
+        private void SavePhoto(SqlConnection con, int id,
+                               System.Web.HttpPostedFileBase file)
+        {
+            if (file == null || file.ContentLength <= 0) return;
+
+            byte[] bytes;
+            using (var ms = new System.IO.MemoryStream())
+            {
+                if (file.InputStream.CanSeek) file.InputStream.Position = 0;
+                file.InputStream.CopyTo(ms);
+                bytes = ms.ToArray();
+            }
+
+            if (bytes.Length == 0) return;
+
+            string contentType = (file.ContentType ?? "").Trim().ToLowerInvariant();
+            if (contentType != "image/png") contentType = "image/jpeg";
+
+            string fileName = System.IO.Path.GetFileName(file.FileName ?? "");
+            if (fileName.Length > 255)
+                fileName = fileName.Substring(fileName.Length - 255);
+
+            const string sql =
+                "UPDATE dbo.Nominations " +
+                "SET Photo = @Photo, PhotoContentType = @ContentType, PhotoFileName = @FileName " +
+                "WHERE NominationId = @Id";
+
+            using (var cmd = new SqlCommand(sql, con))
+            {
+                cmd.Parameters.Add("@Photo", SqlDbType.VarBinary, -1).Value = bytes;
+                cmd.Parameters.Add("@ContentType", SqlDbType.NVarChar, 100).Value = contentType;
+                cmd.Parameters.Add("@FileName", SqlDbType.NVarChar, 255).Value = fileName;
+                cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                cmd.ExecuteNonQuery();
             }
         }
 

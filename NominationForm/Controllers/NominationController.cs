@@ -6,6 +6,7 @@ using NominationSystem.Models;
 
 namespace NominationSystem.Controllers
 {
+    [MemberOnly]
     public class NominationController : Controller
     {
         private readonly NominationRepository repository = new NominationRepository();
@@ -24,46 +25,85 @@ namespace NominationSystem.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            return View(new NominationViewModel
+            var m = new NominationViewModel { ApplicationDate = DateTime.Today };
+            var me = AuthUser.Current;
+            var u = new AuthRepository().GetById(me.UserId);
+            if (u != null)
             {
-                ApplicationDate = DateTime.Today
-            });
+                m.CandidateName = u.FullName;
+                m.MemberNo = u.MemberNo;
+                m.Mobile = u.Mobile;
+                m.Email = u.Email;
+            }
+            return View(m);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(NominationViewModel model)
         {
-            // Application date is system-controlled; it is not editable from the UI.
+            if (model == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             model.ApplicationDate = DateTime.Today;
 
-            // Trim text values so whitespace-only submissions cannot pass validation.
+            var meUser = new AuthRepository().GetById(AuthUser.Current.UserId);
+            if (meUser == null || string.IsNullOrEmpty(meUser.MemberNo))
+            {
+                return RedirectToAction("MemberRequired", "Account");
+            }
+            model.MemberNo = meUser.MemberNo;
+            ModelState.Remove("MemberNo");
+
             TrimModelStrings(model);
 
             if (!AllowedPosts.Contains(model.DesiredPost))
             {
-                ModelState.AddModelError("DesiredPost", "সঠিক নির্বাচনী পদ নির্বাচন করুন।");
+                ModelState.AddModelError(
+                    "DesiredPost",
+                    "সঠিক নির্বাচনী পদ নির্বাচন করুন।"
+                );
             }
 
-            if (model.DateOfBirth.HasValue && model.DateOfBirth.Value.Date >= DateTime.Today)
+            if (model.DateOfBirth.HasValue &&
+                model.DateOfBirth.Value.Date >= DateTime.Today)
             {
-                ModelState.AddModelError("DateOfBirth", "জন্মতারিখ আজকের বা ভবিষ্যতের হতে পারবে না।");
+                ModelState.AddModelError(
+                    "DateOfBirth",
+                    "জন্মতারিখ আজকের বা ভবিষ্যতের হতে পারবে না।"
+                );
             }
 
-            if (model.MembershipDate.HasValue && model.MembershipDate.Value.Date > DateTime.Today)
+            if (model.MembershipDate.HasValue &&
+                model.MembershipDate.Value.Date > DateTime.Today)
             {
-                ModelState.AddModelError("MembershipDate", "সদস্য হওয়ার তারিখ ভবিষ্যতের হতে পারে না।");
+                ModelState.AddModelError(
+                    "MembershipDate",
+                    "সদস্য হওয়ার তারিখ ভবিষ্যতের হতে পারে না।"
+                );
             }
 
-            if (model.ProposerDate.HasValue && model.ProposerDate.Value.Date > DateTime.Today)
+            if (model.ProposerDate.HasValue &&
+                model.ProposerDate.Value.Date > DateTime.Today)
             {
-                ModelState.AddModelError("ProposerDate", "প্রস্তাবকারীর তারিখ ভবিষ্যতের হতে পারে না।");
+                ModelState.AddModelError(
+                    "ProposerDate",
+                    "প্রস্তাবকারীর তারিখ ভবিষ্যতের হতে পারে না।"
+                );
             }
 
-            if (model.SupporterDate.HasValue && model.SupporterDate.Value.Date > DateTime.Today)
+            if (model.SupporterDate.HasValue &&
+                model.SupporterDate.Value.Date > DateTime.Today)
             {
-                ModelState.AddModelError("SupporterDate", "সমর্থনকারীর তারিখ ভবিষ্যতের হতে পারে না।");
+                ModelState.AddModelError(
+                    "SupporterDate",
+                    "সমর্থনকারীর তারিখ ভবিষ্যতের হতে পারে না।"
+                );
             }
+
+            ValidatePhoto(model);
 
             if (!ModelState.IsValid)
             {
@@ -72,14 +112,17 @@ namespace NominationSystem.Controllers
 
             try
             {
-                // Server-generated application number.
                 model.ApplicationNo =
                     "SWF-2027-" +
-                    Guid.NewGuid().ToString("N").Substring(0, 10).ToUpperInvariant();
+                    Guid.NewGuid()
+                        .ToString("N")
+                        .Substring(0, 10)
+                        .ToUpperInvariant();
 
                 int id = repository.Insert(model);
 
                 Session["SubmittedNominationId"] = id;
+
                 TempData["NominationId"] = id;
                 TempData["ApplicationNo"] = model.ApplicationNo;
                 TempData["ApplicationDate"] = model.ApplicationDate;
@@ -89,13 +132,23 @@ namespace NominationSystem.Controllers
             catch (SqlException ex)
             {
                 System.Diagnostics.Trace.TraceError(ex.ToString());
-                ModelState.AddModelError("", "ডেটাবেজে তথ্য সংরক্ষণ করা যায়নি। দয়া করে আবার চেষ্টা করুন।");
+
+                ModelState.AddModelError(
+                    "",
+                    "ডেটাবেজে তথ্য সংরক্ষণ করা যায়নি। দয়া করে আবার চেষ্টা করুন।"
+                );
+
                 return View(model);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError(ex.ToString());
-                ModelState.AddModelError("", "একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।");
+
+                ModelState.AddModelError(
+                    "",
+                    "একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"
+                );
+
                 return View(model);
             }
         }
@@ -103,33 +156,32 @@ namespace NominationSystem.Controllers
         [HttpGet]
         public ActionResult Confirmation()
         {
-            if (TempData["NominationId"] == null || TempData["ApplicationNo"] == null)
+            if (TempData["NominationId"] == null ||
+                TempData["ApplicationNo"] == null)
             {
                 return RedirectToAction("Index");
             }
 
-            int id = Convert.ToInt32(TempData["NominationId"]);
-            string appNo = Convert.ToString(TempData["ApplicationNo"]);
+            int id = Convert.ToInt32(
+                TempData["NominationId"]
+            );
+
+            string appNo = Convert.ToString(
+                TempData["ApplicationNo"]
+            );
 
             DateTime applicationDate = DateTime.Today;
+
             if (TempData["ApplicationDate"] is DateTime)
             {
-                applicationDate = (DateTime)TempData["ApplicationDate"];
-            }
-            else if (TempData["ApplicationDate"] != null)
-            {
-                DateTime parsedDate;
-                if (DateTime.TryParse(Convert.ToString(TempData["ApplicationDate"]), out parsedDate))
-                {
-                    applicationDate = parsedDate;
-                }
+                applicationDate =
+                    (DateTime)TempData["ApplicationDate"];
             }
 
             ViewBag.NominationId = id;
             ViewBag.ApplicationNo = appNo;
             ViewBag.ApplicationDate = applicationDate;
 
-            // Keep the confirmation values available for a refresh of the confirmation page.
             TempData.Keep("NominationId");
             TempData.Keep("ApplicationNo");
             TempData.Keep("ApplicationDate");
@@ -137,34 +189,131 @@ namespace NominationSystem.Controllers
             return View();
         }
 
-        private static void TrimModelStrings(NominationViewModel model)
+        private void ValidatePhoto(NominationViewModel model)
         {
-            if (model == null) return;
+            if (model.Photo == null ||
+                model.Photo.ContentLength <= 0)
+            {
+                return;
+            }
 
-            model.CandidateName = Clean(model.CandidateName);
-            model.MemberNo = Clean(model.MemberNo);
-            model.OrganizationId = Clean(model.OrganizationId);
-            model.Designation = Clean(model.Designation);
-            model.FatherOrHusbandName = Clean(model.FatherOrHusbandName);
-            model.MotherName = Clean(model.MotherName);
-            model.NID = Clean(model.NID);
-            model.PresentAddress = Clean(model.PresentAddress);
-            model.PermanentAddress = Clean(model.PermanentAddress);
-            model.Mobile = Clean(model.Mobile);
-            model.Email = Clean(model.Email);
-            model.DesiredPost = Clean(model.DesiredPost);
-            model.ProposerName = Clean(model.ProposerName);
-            model.ProposerMemberNo = Clean(model.ProposerMemberNo);
-            model.ProposerPost = Clean(model.ProposerPost);
-            model.ProposerMobile = Clean(model.ProposerMobile);
-            model.SupporterName = Clean(model.SupporterName);
-            model.SupporterMemberNo = Clean(model.SupporterMemberNo);
-            model.SupporterMobile = Clean(model.SupporterMobile);
+            const int maxBytes = 2 * 1024 * 1024;
+
+            string extension =
+                System.IO.Path.GetExtension(
+                    model.Photo.FileName
+                );
+
+            string[] allowedExtensions =
+            {
+                ".jpg",
+                ".jpeg",
+                ".png"
+            };
+
+            if (string.IsNullOrWhiteSpace(extension) ||
+                !allowedExtensions.Contains(
+                    extension.ToLowerInvariant()
+                ))
+            {
+                ModelState.AddModelError(
+                    "Photo",
+                    "শুধুমাত্র JPG, JPEG অথবা PNG ছবি আপলোড করুন।"
+                );
+
+                return;
+            }
+
+            if (model.Photo.ContentLength > maxBytes)
+            {
+                ModelState.AddModelError(
+                    "Photo",
+                    "ছবির আকার সর্বোচ্চ ২ MB হতে পারবে।"
+                );
+
+                return;
+            }
+
+            string contentType =
+                (model.Photo.ContentType ?? "")
+                .ToLowerInvariant();
+
+            if (contentType != "image/jpeg" &&
+                contentType != "image/png")
+            {
+                ModelState.AddModelError(
+                    "Photo",
+                    "শুধুমাত্র JPG, JPEG অথবা PNG ছবি আপলোড করুন।"
+                );
+            }
+        }
+
+        private static void TrimModelStrings(
+            NominationViewModel model)
+        {
+            model.CandidateName =
+                Clean(model.CandidateName);
+
+            model.MemberNo =
+                Clean(model.MemberNo);
+
+            model.OrganizationId =
+                Clean(model.OrganizationId);
+
+            model.Designation =
+                Clean(model.Designation);
+
+            model.FatherOrHusbandName =
+                Clean(model.FatherOrHusbandName);
+
+            model.MotherName =
+                Clean(model.MotherName);
+
+            model.NID =
+                Clean(model.NID);
+
+            model.PresentAddress =
+                Clean(model.PresentAddress);
+
+            model.PermanentAddress =
+                Clean(model.PermanentAddress);
+
+            model.Mobile =
+                Clean(model.Mobile);
+
+            model.Email =
+                Clean(model.Email);
+
+            model.DesiredPost =
+                Clean(model.DesiredPost);
+
+            model.ProposerName =
+                Clean(model.ProposerName);
+
+            model.ProposerMemberNo =
+                Clean(model.ProposerMemberNo);
+
+            model.ProposerPost =
+                Clean(model.ProposerPost);
+
+            model.ProposerMobile =
+                Clean(model.ProposerMobile);
+
+            model.SupporterName =
+                Clean(model.SupporterName);
+
+            model.SupporterMemberNo =
+                Clean(model.SupporterMemberNo);
+
+            model.SupporterMobile =
+                Clean(model.SupporterMobile);
         }
 
         private static string Clean(string value)
         {
-            return string.IsNullOrWhiteSpace(value) ? value : value.Trim();
+            return string.IsNullOrWhiteSpace(value)
+                ? value
+                : value.Trim();
         }
     }
 }

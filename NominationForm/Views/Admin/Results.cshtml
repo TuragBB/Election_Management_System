@@ -1,0 +1,230 @@
+﻿@model NominationSystem.Models.ResultsViewModel
+@{
+    ViewBag.Title = "নির্বাচনী ফলাফল";
+    ViewBag.PageTitle = "নির্বাচনী ফলাফল";
+    ViewBag.Active = "results";
+    ViewBag.AdminContentClass = "rs-wide";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string resultsCss = Url.Content("~/Content/admin-results.css") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/admin-results.css")).Ticks;
+    string resultsJs = Url.Content("~/Scripts/admin-results.js") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Scripts/admin-results.js")).Ticks;
+}
+
+@section styles {
+    <link href="@resultsCss" rel="stylesheet" />
+    <style>
+        /* টাই হওয়া পদের আলাদা তালিকা */
+        a.rs-btn {
+            text-decoration: none;
+        }
+        .rs-ties {
+            background: #fff8ee;
+            border: 1px solid #f6c590;
+            border-radius: 14px;
+            padding: 16px 18px 8px;
+            margin-bottom: 18px;
+        }
+
+            .rs-ties[hidden] {
+                display: none;
+            }
+
+        .rs-tie-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+            .rs-tie-head h3 {
+                margin: 0 0 3px;
+                font-size: 16px;
+                color: #8a4300;
+            }
+
+            .rs-tie-head p {
+                margin: 0;
+                font-size: 12.5px;
+                color: #7a5a35;
+            }
+
+            .rs-tie-head a.rs-btn {
+                text-decoration: none;
+            }
+
+        .rs-tiechip {
+            display: inline-block;
+            margin: 0 6px 6px 0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #ffe2c2;
+            border: 1px solid #f6c590;
+            color: #6b3800;
+            font-weight: 700;
+            font-size: 12.5px;
+        }
+
+            .rs-tiechip small {
+                font-weight: 600;
+                opacity: .85;
+            }
+
+        .rs-remark {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #0a7a4b;
+        }
+
+            .rs-remark.is-tie {
+                color: #8a4300;
+            }
+
+        a.rs-btn {
+            text-decoration: none;
+        }
+
+        .rs-ties {
+            border-color: #e8913a;
+            box-shadow: 0 0 0 3px rgba(217,115,26,.18);
+        }
+
+        .rs-tiechip {
+            background: #ffd9a8;
+            border-color: #e8913a;
+            box-shadow: 0 1px 0 rgba(138,67,0,.25);
+        }
+
+        .rs-btn.is-alert {
+            background: #d9731a;
+            border-color: #d9731a;
+            color: #fff;
+            animation: tieBtnPulse 1.6s ease-in-out infinite;
+        }
+
+        @@keyframes tieBtnPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(217,115,26,.55);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(217,115,26,0);
+            }
+        }
+
+        .rs-btn-dark.is-locked {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+@if (!Model.HasElection)
+{
+    <div class="rs-empty">
+        <div class="rs-empty-ic">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="13" width="18" height="8" rx="2" />
+                <path d="M8 13V8l4-4 4 4v5" />
+                <path d="M10 17h4" />
+            </svg>
+        </div>
+        <h3>কোনো নির্বাচন পাওয়া যায়নি</h3>
+        <p>ফলাফল দেখানোর জন্য ডাটাবেসে কোনো নির্বাচন (Election) তৈরি করা নেই।</p>
+    </div>
+}
+else
+{
+    <div class="rs-page" id="rsPage">
+
+        <!-- ================= Header ================= -->
+        <header class="rs-head">
+            <div class="rs-head-left">
+                <div class="rs-pills">
+                    <span class="rs-pill rs-pill-live" id="pillLive"><i class="rs-dot"></i><span id="pillLiveText">লাইভ ভোট গণনা ও ফলাফল প্রকাশ</span></span>
+                    <span class="rs-pill rs-pill-time" id="pillTime">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                        <span id="pillTimeText">সর্বশেষ লাইভ আপডেট: —</span>
+                    </span>
+                    <span class="rs-pill rs-pill-audit" id="pillAudit">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8.5 12.5l2.5 2.5 4.5-5" /></svg>
+                        <span id="pillAuditText">ডিজিটাল নিরীক্ষিত</span>
+                    </span>
+                    <span class="rs-newvotes" id="newVotes" hidden></span>
+                </div>
+
+                <h1 class="rs-title">
+                    নির্বাচনী ফলাফল ও লাইভ ভোট গণনা ড্যাশবোর্ড
+                    <span class="rs-session" id="sessionChip"></span>
+                </h1>
+                <p class="rs-desc" id="rsDesc"></p>
+            </div>
+
+            <div class="rs-head-actions">
+                <div class="rs-btn-row">
+                    <button type="button" class="rs-btn rs-btn-outline" id="btnRefresh">
+                        <svg class="rs-spin-ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" /><path d="M3 21v-5h5" /></svg>
+                        লাইভ রিফ্রেশ
+                    </button>
+                    <a class="rs-btn rs-btn-gold" id="btnPrint" target="_blank" rel="noopener"
+                       href="@Url.Action("ResultPrint", "Admin", new { electionId = Model.ElectionId })">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6" /><rect x="3" y="9" width="18" height="9" rx="2" /><path d="M6 14h12v7H6z" /></svg>
+                        সামারি প্রিন্ট
+                    </a>
+                    <a class="rs-btn rs-btn-gold" id="btnTie"
+                       href="@Url.Action("TieResolve", "Admin", new { electionId = Model.ElectionId })">টাই সমাধান</a>
+                </div>
+                <button type="button" class="rs-btn rs-btn-dark" id="btnGazette">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8.5 12.5l2.5 2.5 4.5-5" /></svg>
+                    চূড়ান্ত গেজেট অনুমোদন
+                </button>
+            </div>
+        </header>
+
+        <!-- ================= Stat cards ================= -->
+        <section class="rs-stats" id="rsStats"></section>
+
+        <!-- ================= Tie positions (shudhu vote shesh hole) ================= -->
+        <section class="rs-ties" id="rsTies" hidden></section>
+
+        <!-- ================= Post wise results ================= -->
+        <div class="rs-section-title">
+            <h2><i></i><span id="secTitle">নির্বাচনী পদভিত্তিক ফলাফল</span></h2>
+            <span class="rs-section-note" id="secNote"></span>
+        </div>
+
+        <section class="rs-grid" id="rsGrid"></section>
+
+        <!-- ================= Summary table ================= -->
+        <section class="rs-summary" id="rsSummary"></section>
+
+        <div id="antiForgeryForm" style="display:none">@Html.AntiForgeryToken()</div>
+
+        <div class="rs-toast" id="rsToast" hidden></div>
+    </div>
+
+}
+
+@section scripts {
+    @if (Model.HasElection)
+    {
+        <script>
+            window.RESULTS_INIT = @Html.Raw((string)ViewBag.InitJson);
+            window.RESULTS_CFG = {
+                dataUrl: '@Url.Action("ResultsData", "Admin")',
+                csvUrl: '@Url.Action("ResultsCsv", "Admin")',
+                printUrl: '@Url.Action("ResultPrint", "Admin")',
+                tieUrl: '@Url.Action("TieResolve", "Admin")',
+                approveUrl: '@Url.Action("ApproveGazette", "Admin")',
+                photoUrl: '@Url.Action("Photo", "Vote")',
+                electionId: @Model.ElectionId
+            };
+        </script>
+        <script src="@resultsJs"></script>
+    }
+}

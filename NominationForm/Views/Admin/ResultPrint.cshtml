@@ -1,0 +1,455 @@
+﻿@model NominationSystem.Models.ResultsViewModel
+@using NominationSystem.Models
+@{
+    Layout = null;
+
+    bool ended = Model.HasElection && Model.Phase == VotePhase.Ended;
+    string statusText = !Model.HasElection ? "" :
+        Model.GazetteApproved ? "চূড়ান্ত ফলাফল (গেজেট অনুমোদিত)" :
+        ended ? "ফলাফল — গেজেট অনুমোদনের অপেক্ষায়" :
+        "সাময়িক ফলাফল — ভোট গণনা চলমান";
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    int serial = 0;
+}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>নির্বাচনী ফলাফল</title>
+    <style>
+        @@page {
+            size: A4 portrait;
+            margin: 12mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Bengali', 'Nirmala UI', 'Kalpurush', 'SolaimanLipi', Arial, sans-serif;
+            font-size: 12.5px;
+            color: #111;
+            background: #e9eeec;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 10px;
+            background: #fff;
+            border-bottom: 1px solid #d3dfdb;
+        }
+
+            .toolbar button {
+                padding: 9px 18px;
+                border-radius: 8px;
+                border: 1px solid #c9d6d1;
+                background: #fff;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+                .toolbar button.primary {
+                    background: #0c3d33;
+                    border-color: #0c3d33;
+                    color: #fff;
+                }
+
+            .toolbar a.tb-link {
+                padding: 9px 18px;
+                border-radius: 8px;
+                border: 1px solid #c9d6d1;
+                background: #fff;
+                color: #111;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+                font-family: inherit;
+            }
+
+        .paper {
+            width: 210mm;
+            max-width: 100%;
+            margin: 14px auto;
+            padding: 12mm;
+            background: #fff;
+            box-shadow: 0 2px 14px rgba(0,0,0,.12);
+        }
+
+        .hdr {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+            .hdr .org {
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: .4px;
+                color: #0c3d33;
+            }
+
+            .hdr h1 {
+                margin: 4px 0 2px;
+                font-size: 20px;
+            }
+
+            .hdr h3 {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            .hdr .stat {
+                display: inline-block;
+                margin-top: 8px;
+                padding: 3px 14px;
+                border: 1.5px solid #0c3d33;
+                border-radius: 999px;
+                font-weight: 700;
+                color: #0c3d33;
+            }
+
+        .meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px 14px;
+            border: 1px solid #999;
+            padding: 7px 10px;
+            margin: 10px 0 14px;
+            font-size: 12px;
+        }
+
+            .meta b {
+                font-weight: 700;
+            }
+
+        h2.sec {
+            margin: 14px 0 6px;
+            font-size: 14px;
+            color: #0c3d33;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        table.rt {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .rt th, .rt td {
+            border: 1px solid #444;
+            padding: 5px 6px;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .rt th {
+            background: #e6efeb;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .rt thead {
+            display: table-header-group;
+        }
+
+        .rt tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .rt td.c {
+            text-align: center;
+        }
+
+        .rt td.n {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .rt td.post {
+            font-weight: 700;
+            background: #f7faf8;
+        }
+
+        .rt tr.win td {
+            font-weight: 700;
+            background: #eef7f2;
+        }
+
+        .rt tr.tie td {
+            background: #fff3e2;
+        }
+
+        .rm {
+            font-weight: 700;
+            font-size: 11.5px;
+            margin-left: 4px;
+        }
+
+            .rm.tie {
+                color: #8a4300;
+            }
+
+        .sign {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-top: 56px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+            .sign > div {
+                flex: 1;
+                text-align: center;
+            }
+
+            .sign .line {
+                border-top: 1px solid #000;
+                padding-top: 5px;
+                font-weight: 700;
+            }
+
+            .sign small {
+                display: block;
+                font-weight: 400;
+                color: #333;
+                margin-top: 2px;
+            }
+
+        .approved {
+            margin-top: 6px;
+            font-size: 11.5px;
+            color: #0a5c3a;
+            font-weight: 700;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 10px;
+            font-size: 15px;
+        }
+
+        @@media print {
+            body {
+                background: #fff;
+            }
+
+            .toolbar {
+                display: none !important;
+            }
+
+            .paper {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button type="button" class="primary" id="btnDoPrint">প্রিন্ট করুন</button>
+        @if (Model.HasElection)
+        {
+            <a class="tb-link" href="@Url.Action("ResultsCsv", "Admin", new { electionId = Model.ElectionId })">CSV ডাউনলোড</a>
+        }
+        <button type="button" id="btnDoClose">বন্ধ করুন</button>
+    </div>
+
+    <div class="paper">
+
+        @if (!Model.HasElection)
+        {
+            <div class="empty">কোনো নির্বাচন পাওয়া যায়নি।</div>
+        }
+        else
+        {
+            <div class="hdr">
+                <div class="org">Staff Welfare Fund</div>
+                <h1>নির্বাচনী ফলাফল</h1>
+                <h3>@Model.Title (@Bn.Digits(Model.ElectionYear))</h3>
+                <span class="stat">@statusText</span>
+            </div>
+
+            <div class="meta">
+                <div>মোট পদ: <b>@Bn.Digits(Model.TotalPosts)টি</b></div>
+                <div>মোট প্রদত্ত ব্যালট: <b>@Bn.Digits(Model.TotalBallots)টি</b></div>
+                <div>
+                    @if (Model.EligibleVoters > 0)
+                    {
+                        <text>মোট ভোটার: <b>@Bn.Digits(Model.EligibleVoters) জন</b> (@Bn.Digits(Model.Turnout.ToString("0.0", inv))%)</text>
+                    }
+                    else
+                    {
+                        <text>&nbsp;</text>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(Model.StartText))
+                {
+                    <div>ভোট শুরু: <b>@Model.StartText</b></div>
+                }
+                @if (!string.IsNullOrEmpty(Model.EndText))
+                {
+                    <div>ভোট শেষ: <b>@Model.EndText</b></div>
+                }
+                <div>প্রিন্টের সময়: <b>@Bn.DateTimeText(DateTime.Now)</b></div>
+            </div>
+
+            @* ======================= টেবিল ১ : বিজয়ী / নির্বাচিত তালিকা ======================= *@
+            <h2 class="sec">১. বিজয়ী / নির্বাচিত প্রার্থীদের তালিকা</h2>
+            <table class="rt">
+                <thead>
+                    <tr>
+                        <th style="width:34px">ক্রম</th>
+                        <th>পদের নাম</th>
+                        <th>বিজয়ী / নির্বাচিত প্রার্থী</th>
+                        <th style="width:46px">ব্যালট</th>
+                        <th style="width:80px">সদস্য নং</th>
+                        <th style="width:56px">প্রাপ্ত ভোট</th>
+                        <th style="width:52px">শতকরা</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Posts)
+                    {
+                        serial++;
+                        var chosen = p.Candidates.Where(x => x.IsWinner || x.IsTie).ToList();
+
+                        if (chosen.Count == 0)
+                        {
+                            <tr>
+                                <td class="c">@Bn.Digits(serial)</td>
+                                <td class="post">@p.DisplayName</td>
+                                <td colspan="5" class="c">— কোনো ভোট গণনা হয়নি —</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < chosen.Count; i++)
+                            {
+                                var c = chosen[i];
+                                <tr class="@(c.IsTie ? "tie" : "win")">
+                                    @if (i == 0)
+                                    {
+                                        <td class="c" rowspan="@chosen.Count">@Bn.Digits(serial)</td>
+                                        <td class="post" rowspan="@chosen.Count">
+                                            @p.DisplayName
+                                            @if (!string.IsNullOrEmpty(p.DisplayNameEn))
+                                            {
+                                                <br /><span style="font-weight:400">(@p.DisplayNameEn)</span>
+                                            }
+                                        </td>
+                                    }
+                                    <td>
+                                        @c.Name
+                                        @if (!string.IsNullOrEmpty(c.Remarks))
+                                        {
+                                            <span class="rm @(c.IsTie ? "tie" : "")">(@c.Remarks)</span>
+                                        }
+                                    </td>
+                                    <td class="c">@Bn.Digits(c.BallotNo.ToString("00"))</td>
+                                    <td class="c">@Bn.Digits(c.MemberNo)</td>
+                                    <td class="n">@Bn.Digits(c.Votes)</td>
+                                    <td class="n">@Bn.Digits(c.Percent.ToString("0.0", inv))%</td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+
+            @* ======================= টেবিল ২ : পদভিত্তিক বিস্তারিত ======================= *@
+            <h2 class="sec">২. পদভিত্তিক বিস্তারিত ভোট ফলাফল</h2>
+            <table class="rt">
+                <thead>
+                    <tr>
+                        <th>পদের নাম</th>
+                        <th style="width:44px">অবস্থান</th>
+                        <th style="width:46px">ব্যালট</th>
+                        <th>প্রার্থীর নাম</th>
+                        <th style="width:80px">সদস্য নং</th>
+                        <th style="width:56px">প্রাপ্ত ভোট</th>
+                        <th style="width:52px">শতকরা</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Posts)
+                    {
+                        for (int i = 0; i < p.Candidates.Count; i++)
+                        {
+                            var c = p.Candidates[i];
+                            <tr class="@(c.IsTie ? "tie" : (c.IsWinner ? "win" : ""))">
+                                @if (i == 0)
+                                {
+                                    <td class="post" rowspan="@p.Candidates.Count">
+                                        @p.DisplayName
+                                        @if (!string.IsNullOrEmpty(p.DisplayNameEn))
+                                        {
+                                            <br /><span style="font-weight:400">(@p.DisplayNameEn)</span>
+                                        }
+                                        <br /><span style="font-weight:400">আসন: @Bn.Digits(p.Seats)টি</span>
+                                    </td>
+                                }
+                                <td class="c">@Bn.Digits(c.Rank)</td>
+                                <td class="c">@Bn.Digits(c.BallotNo.ToString("00"))</td>
+                                <td>
+                                    @c.Name
+                                    @if (!string.IsNullOrEmpty(c.Remarks))
+                                    {
+                                        <span class="rm @(c.IsTie ? "tie" : "")">(@c.Remarks)</span>
+                                    }
+                                </td>
+                                <td class="c">@Bn.Digits(c.MemberNo)</td>
+                                <td class="n">@Bn.Digits(c.Votes)</td>
+                                <td class="n">@Bn.Digits(c.Percent.ToString("0.0", inv))%</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <div class="sign">
+                <div>
+                    <div class="line">প্রধান নির্বাচন কমিশনার</div>
+                    <small>স্বাক্ষর ও তারিখ</small>
+                </div>
+                <div>
+                    <div class="line">সুপার এডমিন (অডিট সেল)</div>
+                    <small>অনুমোদিত ও সত্যায়িত</small>
+                    @if (Model.GazetteApproved)
+                    {
+                        <div class="approved">✔ গেজেট অনুমোদিত — @Model.GazetteApprovedText</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>document.getElementById('btnDoPrint').addEventListener('click', function () { window.print(); });
+        document.getElementById('btnDoClose').addEventListener('click', function () {
+            window.close();
+            // tab bondho na hole (ekoi tab e khulle) ager page e fire jabe
+            setTimeout(function () { if (!window.closed) { history.length > 1 ? history.back() : null; } }, 250);
+        });</script>
+</body>
+</html>

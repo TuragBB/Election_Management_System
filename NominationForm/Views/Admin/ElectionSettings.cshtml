@@ -1,0 +1,291 @@
+﻿@model NominationSystem.Models.ElectionSettingsViewModel
+@{
+    ViewBag.Title = "নির্বাচন সেটিংস";
+    ViewBag.PageTitle = "নির্বাচন সেটিংস";
+    ViewBag.Active = "settings";
+    ViewBag.AdminContentClass = "es-content";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // File change hole URL change hoy, tai browser purono CSS/JS cache kore rakhe na
+    string settingsCss = Url.Content("~/Content/admin-settings.css") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/admin-settings.css")).Ticks;
+    string settingsJs = Url.Content("~/Scripts/admin-settings.js") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Scripts/admin-settings.js")).Ticks;
+
+    string loadError = Convert.ToString(ViewBag.LoadError);
+    bool locked = !string.IsNullOrEmpty(loadError);
+    bool isNew = Model.IsNew || !Model.HasElection;
+
+    string heroTitle = isNew ? "নতুন নির্বাচন তৈরি করুন" : Model.Title;
+    string heroSub = isNew
+        ? "নির্বাচনের তথ্য ও সময়সূচি দিয়ে নতুন নির্বাচন চালু করুন"
+        : string.Join("  •  ", new[] { Model.TermText, Model.CommitteeName }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+    string baseUrl = Url.Action("ElectionSettings", "Admin");
+    string nominationsUrl = Url.Action("Nominations", "Admin");
+    string saveLabel = isNew ? "নির্বাচন তৈরি করুন" : "পরিবর্তন সংরক্ষণ করুন";
+}
+
+@section styles {
+    <link href="@settingsCss" rel="stylesheet" />
+}
+
+<div class="es-wrap" id="esRoot"
+     data-save-url="@Url.Action("ElectionSettingsSave", "Admin")"
+     data-close-url="@Url.Action("ElectionEmergencyClose", "Admin")"
+     data-base-url="@baseUrl"
+     data-election-id="@(isNew ? 0 : Model.ElectionId)"
+     data-new="@(isNew ? "1" : "0")"
+     data-locked="@(locked ? "1" : "0")"
+     data-phase="@Model.Phase"
+     data-phase-text="@Model.PhaseText"
+     data-open="@(Model.IsOpen ? "1" : "0")">
+
+    <div id="antiForgeryForm" style="display:none">@Html.AntiForgeryToken()</div>
+
+    <!-- ================= HERO ================= -->
+    <section class="es-hero">
+        <div class="es-hero-main">
+            <span class="es-eyebrow">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9M17 8h3M4 16h3M11 16h9" /><circle cx="15" cy="8" r="2" /><circle cx="9" cy="16" r="2" /></svg>
+                নির্বাচন কনফিগারেশন
+            </span>
+            <h1 class="es-hero-title" id="esHeroTitle">@heroTitle</h1>
+            <p class="es-hero-sub" id="esHeroSub">@heroSub</p>
+            <div class="es-hero-pills">
+                <span class="es-pill es-phase es-phase-@Model.Phase js-phase"><i></i><span class="js-phase-text">@Model.PhaseText</span></span>
+                <span class="es-pill es-pill-glass" id="esCfgPill"><span id="esCfgText">@(isNew ? "নতুন কনফিগারেশন" : "সক্রিয় কনফিগারেশন")</span></span>
+            </div>
+        </div>
+
+        <div class="es-hero-side">
+            @if (Model.Elections != null && Model.Elections.Count > 0)
+            {
+                <label class="es-hero-label" for="esPicker">নির্বাচন বাছাই করুন</label>
+                <div class="es-select-wrap">
+                    <select id="esPicker" class="es-select">
+                        @if (isNew)
+                        {
+                            <option value="new" selected="selected">＋ নতুন নির্বাচন (অসংরক্ষিত)</option>
+                        }
+                        @foreach (var e in Model.Elections)
+                        {
+                            <option value="@e.ElectionId" selected="@(!isNew && e.ElectionId == Model.ElectionId ? "selected" : null)">@e.Title  •  @e.PhaseText</option>
+                        }
+                        @if (!isNew)
+                        {
+                            <option value="new">＋ নতুন নির্বাচন তৈরি করুন</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            @if (!isNew)
+            {
+                <a class="es-btn es-btn-gold" id="esNewBtn" href="@(baseUrl + "?mode=new")">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    নতুন নির্বাচন তৈরি করুন
+                </a>
+            }
+        </div>
+    </section>
+
+    @if (!string.IsNullOrEmpty(loadError))
+    {
+        <div class="es-alert">@loadError</div>
+    }
+
+    <!-- ================= STATS ================= -->
+    @if (!isNew)
+    {
+        <section class="es-stats">
+            <div class="es-stat">
+                <span class="es-stat-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10" /></svg></span>
+                <div>
+                    <b>@NominationSystem.Models.Bn.Digits(Model.PostCount)</b>
+                    <small>নির্বাচনী পদ</small>
+                </div>
+            </div>
+            <div class="es-stat">
+                <span class="es-stat-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 14l2 2 4-4" /></svg></span>
+                <div>
+                    <b>@NominationSystem.Models.Bn.Digits(Model.ApprovedNominations)</b>
+                    <small>অনুমোদিত আবেদন • অপেক্ষমাণ @NominationSystem.Models.Bn.Digits(Model.PendingNominations)</small>
+                </div>
+            </div>
+            <div class="es-stat">
+                <span class="es-stat-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2" /><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1" /><path d="M16 11l2 2 4-4" /></svg></span>
+                <div>
+                    <b>@NominationSystem.Models.Bn.Digits(Model.CandidateCount)</b>
+                    <small>ব্যালটে প্রার্থী</small>
+                </div>
+            </div>
+            <div class="es-stat">
+                <span class="es-stat-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="2" /><path d="M8 9V6a4 4 0 0 1 8 0v3M12 13v3" /></svg></span>
+                <div>
+                    <b>@NominationSystem.Models.Bn.Digits(Model.BallotCount)</b>
+                    <small>জমা পড়া ব্যালট</small>
+                </div>
+            </div>
+        </section>
+    }
+
+    <!-- ================= MAIN GRID ================= -->
+    <div class="es-layout">
+
+        <div class="es-col-main">
+
+            <!-- ---------- সাধারণ তথ্য ---------- -->
+            <section class="es-card">
+                <div class="es-card-head">
+                    <span class="es-card-ico">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 8h9M17 8h3M4 16h3M11 16h9" />
+                            <circle cx="15" cy="8" r="2" />
+                            <circle cx="9" cy="16" r="2" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="es-card-title">সাধারণ তথ্য</h3>
+                        <p class="es-card-sub">নির্বাচনের প্রাথমিক পরিচিতি ও মূল নিয়মনীতি</p>
+                    </div>
+                </div>
+
+                <div class="es-grid es-grid-2">
+                    <div class="es-field es-full">
+                        <label class="es-label" for="esTitle">নির্বাচনের নাম ও টাইটেল <b>*</b></label>
+                        <input type="text" class="es-input" id="esTitle" maxlength="200" autocomplete="off"
+                               value="@Model.Title"
+                               placeholder="স্টাফ ওয়েলফেয়ার ফান্ড ত্রৈবার্ষিক সাধারণ নির্বাচন" />
+                    </div>
+
+                    <div class="es-field">
+                        <label class="es-label" for="esTerm">নির্বাচনের বছর ও মেয়াদ</label>
+                        <input type="text" class="es-input" id="esTerm" maxlength="50" autocomplete="off"
+                               value="@Model.TermText"
+                               placeholder="২০২৭ - ২০৩০" />
+                    </div>
+
+                    <div class="es-field">
+                        <label class="es-label" for="esCommittee">নির্বাচন পরিচালনা পরিষদ / সেল</label>
+                        <input type="text" class="es-input" id="esCommittee" maxlength="200" autocomplete="off"
+                               value="@Model.CommitteeName"
+                               placeholder="কেন্দ্রীয় নির্বাচন পরিচালনা কমিটি" />
+                    </div>
+
+                    <div class="es-field es-full">
+                        <label class="es-label" for="esNote">ভোটার যোগ্যতা ও নোট</label>
+                        <textarea class="es-textarea" id="esNote" maxlength="1000"
+                                  placeholder="ধারা ১৪(ক) অনুযায়ী ৩০ নভেম্বর ২০২৬ এর মধ্যে নিযুক্ত কর্মকর্তা-কর্মচারীগণ ভোটাধিকার প্রয়োগ করতে পারবেন।">@Model.EligibilityNote</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- ভোটের তারিখ ও সময়সূচি ---------- -->
+            <section class="es-card">
+                <div class="es-card-head">
+                    <span class="es-card-ico">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+                            <path d="M8 3v4M16 3v4M3.5 10h17" />
+                            <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="es-card-title">ভোটের তারিখ ও সময়সূচি</h3>
+                        <p class="es-card-sub">নির্ধারিত সময়ে ভোটগ্রহণ নিজে থেকেই শুরু ও শেষ হবে</p>
+                    </div>
+                    <span class="es-pill es-pill-amber" id="esDuration">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 12V3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" /></svg>
+                        <span id="esDurationText">মোট স্থায়িত্বকাল: —</span>
+                    </span>
+                </div>
+
+                <div class="es-grid es-grid-2">
+                    <div class="es-field">
+                        <label class="es-label" for="esStart">ভোট শুরুর তারিখ ও সময়</label>
+                        <div class="es-dt" id="esStartBox">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                            <span class="es-dt-text is-empty" id="esStartText">তারিখ ও সময় নির্বাচন করুন</span>
+                            <input type="datetime-local" class="es-dt-input" id="esStart" value="@Model.StartValue" aria-label="ভোট শুরুর তারিখ ও সময়" />
+                        </div>
+                        <div class="es-hint">বাংলাদেশ স্ট্যান্ডার্ড টাইম (BST, UTC+6)</div>
+                    </div>
+
+                    <div class="es-field">
+                        <label class="es-label" for="esEnd">ভোট সমাপ্তির তারিখ ও সময়</label>
+                        <div class="es-dt" id="esEndBox">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" /><path d="M8 3v4M16 3v4M3.5 10h17" /><path d="M9 15l2 2 4-4" /></svg>
+                            <span class="es-dt-text is-empty" id="esEndText">তারিখ ও সময় নির্বাচন করুন</span>
+                            <input type="datetime-local" class="es-dt-input" id="esEnd" value="@Model.EndValue" aria-label="ভোট সমাপ্তির তারিখ ও সময়" />
+                        </div>
+                        <div class="es-hint">নির্ধারিত সময়ে স্বয়ংক্রিয়ভাবে ব্যালট বন্ধ হবে</div>
+                    </div>
+                </div>
+
+                <div class="es-info">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg>
+                    <span>শুরু ও সমাপ্তির সময় দিয়ে সংরক্ষণ করলেই ভোটগ্রহণ নির্ধারিত সময় অনুযায়ী চালু থাকবে। আলাদা করে "চালু করুন" চাপার প্রয়োজন নেই।</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= SIDE ================= -->
+        <aside class="es-col-side">
+
+            <section class="es-card es-card-compact">
+                <div class="es-card-head es-card-head-sm">
+                    <span class="es-card-ico">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2" /><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1" /><path d="M16 11l2 2 4-4" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="es-card-title">প্রার্থী তালিকা</h3>
+                        <p class="es-card-sub">মনোনয়ন থেকে স্বয়ংক্রিয়</p>
+                    </div>
+                </div>
+                <p class="es-side-text">
+                    প্রার্থী আলাদাভাবে যোগ করতে হয় না। মনোনয়ন আবেদন <b>অনুমোদন</b> করলেই আবেদনকারী সংশ্লিষ্ট পদের প্রার্থী হিসেবে ডাটাবেসে সংরক্ষিত হয়ে ব্যালটে যুক্ত হয়ে যায়। বাতিল করলে ব্যালট থেকে বাদ যায়।
+                </p>
+                <a class="es-btn es-btn-ghost es-btn-block" href="@nominationsUrl">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg>
+                    মনোনয়ন আবেদনসমূহ দেখুন
+                </a>
+            </section>
+
+            <section class="es-card es-card-compact es-card-danger" id="esControl">
+                <div class="es-card-head es-card-head-sm">
+                    <span class="es-card-ico es-ico-danger">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.2h.01" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="es-card-title">জরুরি নিয়ন্ত্রণ</h3>
+                        <p class="es-card-sub">শুধু জরুরি প্রয়োজনে ব্যবহার করুন</p>
+                    </div>
+                </div>
+
+                <p class="es-side-text" id="esCtlNote"></p>
+
+                <button type="button" class="es-btn es-btn-danger es-btn-block" id="esEmergency">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+                    <span id="esEmergencyLabel">জরুরি ভোট বন্ধ করুন</span>
+                </button>
+            </section>
+        </aside>
+    </div>
+
+    <!-- ================= ACTION BAR ================= -->
+    <div class="es-actionbar">
+        <span class="es-dirty" id="esDirty"><i></i><span>অসংরক্ষিত পরিবর্তন আছে</span></span>
+        <div class="es-actionbar-btns">
+            <button type="button" class="es-btn es-btn-ghost" id="esCancel">বাতিল করুন</button>
+            <button type="button" class="es-btn es-btn-primary js-save">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8.5 12.5l2.4 2.4 4.6-5" /></svg>
+                <span class="es-btn-label">@saveLabel</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="@settingsJs"></script>
+}

@@ -162,6 +162,37 @@
                 $(this).val($.trim($(this).val()));
             });
 
+            var photoInput = document.getElementById("Photo");
+            if (photoInput && photoInput.files && photoInput.files.length) {
+                var photo = photoInput.files[0];
+                var photoName = (photo.name || "").toLowerCase();
+                var allowedPhoto = [".jpg", ".jpeg", ".png"].some(function (ext) {
+                    return photoName.endsWith(ext);
+                });
+
+                if (!allowedPhoto) {
+                    Swal.fire({
+                        title: "ছবির ফাইল সঠিক নয়",
+                        text: "শুধুমাত্র JPG, JPEG অথবা PNG ছবি আপলোড করুন।",
+                        icon: "error",
+                        confirmButtonText: "ঠিক আছে",
+                        confirmButtonColor: "#0c5b4e"
+                    });
+                    return;
+                }
+
+                if (photo.size > 2 * 1024 * 1024) {
+                    Swal.fire({
+                        title: "ছবির আকার বেশি",
+                        text: "ছবির আকার সর্বোচ্চ ২ MB হতে পারবে।",
+                        icon: "error",
+                        confirmButtonText: "ঠিক আছে",
+                        confirmButtonColor: "#0c5b4e"
+                    });
+                    return;
+                }
+            }
+
             if (!$form.valid()) {
                 showValidationPopup($form, "ফর্মে ভুল আছে");
                 return;

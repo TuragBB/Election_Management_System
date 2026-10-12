@@ -1,0 +1,55 @@
+﻿@{
+    // ফাইল বদলালেই URL বদলায়, তাই ব্রাউজার পুরোনো cache ব্যবহার করে না
+    string cssUrl = Url.Content("~/Content/account.css") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/account.css")).Ticks;
+    string jsUrl = Url.Content("~/Scripts/account.js") + "?v=" +
+        System.IO.File.GetLastWriteTime(Server.MapPath("~/Scripts/account.js")).Ticks;
+    string fontUrl = Url.Content("~/Content/pdf-fonts/NotoSansBengali-Regular.ttf");
+}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Staff Welfare Fund</title>
+    <link rel="preload" href="@fontUrl" as="font" type="font/ttf" crossorigin />
+    <link href="@cssUrl" rel="stylesheet" />
+</head>
+<body class="acc-body">
+    <div class="acc-shell">
+
+        <aside class="acc-side">
+            <a class="acc-brand" href="@Url.Action("Index", "Vote")">
+                <span class="acc-brand-mark">SWF</span>
+                <span class="acc-brand-text">
+                    <strong>Staff Welfare Fund</strong>
+                    <small>অনলাইন মনোনয়ন ও ভোটিং পোর্টাল</small>
+                </span>
+            </a>
+
+            <div class="acc-side-body">
+                <span class="acc-pill"><i class="acc-dot"></i>ত্রিবার্ষিক নির্বাচন–২০২৭</span>
+                <h2>নিরাপদ ডিজিটাল<br />ভোটার ও সদস্য পোর্টাল</h2>
+                <p>একটি অ্যাকাউন্টেই ভোট দিন, আর সদস্য হলে মনোনয়ন ফরমও জমা দিন। আপনার তথ্য ও ভোট সম্পূর্ণ সুরক্ষিত।</p>
+
+                <ul class="acc-feats">
+                    <li>@VoteIcons.Get("shield", 18)<span><b>গোপন ব্যালট</b>কে কাকে ভোট দিয়েছেন তা কোথাও সংরক্ষিত হয় না</span></li>
+                    <li>@VoteIcons.Get("ballot", 18)<span><b>এক ভোটার, এক ভোট</b>প্রতিটি অ্যাকাউন্ট একবারই ভোট দিতে পারবে</span></li>
+                    <li>@VoteIcons.Get("briefcase", 18)<span><b>সদস্যদের জন্য মনোনয়ন</b>সদস্য নম্বর যাচাইয়ের পর ফরম পূরণ করা যাবে</span></li>
+                </ul>
+            </div>
+
+            <div class="acc-side-foot">© ২০২৬–২০২৭ Staff Welfare Fund</div>
+        </aside>
+
+        <main class="acc-main">
+            <div class="acc-card">
+                @RenderBody()
+            </div>
+            <p class="acc-foot">নির্বাচন পরিচালনা পরিষদ কর্তৃক সর্বস্বত্ব সংরক্ষিত।</p>
+        </main>
+    </div>
+
+    <script src="@jsUrl"></script>
+</body>
+</html>
